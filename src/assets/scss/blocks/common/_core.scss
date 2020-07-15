@@ -1,0 +1,46 @@
+
+/*  Фикс IE11 для прижатия футера к подвалу  */
+html {
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  font-family: "Merriweather", "Arial", sans-serif;
+  font-size: 16px;
+  color: $main-text-color;
+}
+
+
+
+/*  Базовый контейнер для блоков, не центруется, тянется до краев экрана (максимум взят за 2133px), доавлен padding
+    для того, чтобы не мобильных текст не прижимался к краям, до мобильных разрешений padding не влияет
+    Добавлятся блокам div или section, которые идут до краев экрана.
+================================
+*/
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+
+/*  Обертка-центровщик. Добавлятся блокам, которые занимают фиксированную максимальную ширину.
+================================
+*/
+
+.wrapper {
+  width: 100%;
+  max-width: $wrapper-max-width;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+

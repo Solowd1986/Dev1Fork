@@ -1,0 +1,70 @@
+
+
+/*  Идея в следующем:
+    1. От body мы получаем flex и направление column, теперь все div первой вложенности идут друг под другом.
+    2. Любому из них, например, контентному, даем класс container и content-offset.
+    3. И этот блок container тоже flex и он тянется вниз из-за grow. Но его элемент, с тегом main и классом content - нет
+    4. Теперь тянем вниз и вложенный элемент, ему тоже задаем flex+column+grow.
+    5. Все элементы тянутся вниз так, главное - поддержка вложенности, используя класс element-flex-grow
+================================
+*/
+
+.element-flex-grow {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+
+.content {
+  background-color: lightpink;
+  padding: 1px;
+  margin: auto;
+  text-align: center;
+}
+
+
+
+/*  БЛОК КАРТОЧЕК ТОВАРОВ
+    Данный блок вмещает в себя некие перечисляемые единицы, в нем сразу указан миксин для вытягивания содержимого блока на
+    15px через margin, чтобы скомпенсировать отступы вложенных элементов.
+================================
+*/
+
+.items-list {
+  display: flex;
+  flex-wrap: wrap;
+  @include wrapper-negative-margins()
+}
+
+.items-list-bg {
+  background-color: initial;
+}
+
+/*  Отдельный элемент этого блока
+    Генерируем размер каждого элемента исходя из общих 12 колонок. Начинамем с 12/3 = 4 в ряд, потом 3, 2 и 1 колонка.
+    Также элементы сразу получаеют margin слева и справа (их и компенсируют отрицательные margin для родительского блока) и
+    нижний margin, чтобы ряды не соприкасались по нижней границе.
+================================
+*/
+
+.item {
+  display: flex;
+  flex-direction: column;
+  transition: .3s linear;
+  @include generate-columns-for-item(3);
+
+  @media (max-width: 780px) {
+    @include generate-columns-for-item(4);
+  }
+
+  @media (max-width: 600px) {
+    @include generate-columns-for-item(6);
+
+  }
+
+  @media (max-width: 480px) {
+    @include generate-columns-for-item(12);
+  }
+}
+

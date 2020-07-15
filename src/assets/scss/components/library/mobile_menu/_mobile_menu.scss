@@ -1,0 +1,32 @@
+
+/*  МОБИЛЬНОЕ МЕНЮ
+    Структура иконки мобильного меню: <div class="mobile-menu__icon"><span><span><div>
+================================
+*/
+.mobile-menu__icon {
+  width: 44px;
+  background-color: transparent;
+}
+
+.mobile-menu__icon::before, .mobile-menu__icon::after, .mobile-menu__icon span {
+  content: "";
+  display: block;
+  height: 5px;
+  margin: 7px 0;
+  border-radius: 3px;
+  background-color: red;
+  transition: all 0.2s ease-in-out;
+}
+
+/*  Класс, подключающийся к блоку меню при клике, для трансформации
+================================
+*/
+.mobile-menu__icon--active::before {
+  transform: translateY(12px) rotate(135deg);
+}
+.mobile-menu__icon--active::after {
+  transform: translateY(-12px) rotate(-135deg);
+}
+.mobile-menu__icon--active span {
+  transform: scale(0);
+}

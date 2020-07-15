@@ -1,0 +1,32 @@
+
+/*  Компоненты  */
+@import "components/normalize";
+@import "components/custom-reset";
+@import "components/variables";
+@import "components/mixins";
+@import "components/forms";
+@import "components/buttons";
+
+@import "components/fonts";
+@import "components/helpers";
+
+
+
+/*  Общие стили  */
+@import "blocks/common/core";
+@import "blocks/common/header";
+@import "blocks/common/slider";
+@import "blocks/common/footer";
+@import "blocks/common/sprite";
+
+
+/*  Стили отдельных страниц  */
+@import "blocks/pages/index";
+@import "blocks/pages/categorie";
+@import "blocks/pages/single-product";
+
+
+/*  Стили для сторонних компонентов  */
+
+
+
