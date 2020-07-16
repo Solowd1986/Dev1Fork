@@ -51,21 +51,20 @@ gulp.task('build', function() {
 });
 
 
-gulp.task('default', ['build'], function() {
-
-    browserSync.init({
-        server: "./"
-        /* proxy: {your_vhost} - указав тут имя виртуального хоста в виде строки, можно работать и с серверной частью */
-    });
-
-    gulp.watch([path.watch.tpl], ['build']);
-    gulp.watch([path.watch.html, path.watch.css, path.watch.js]).on('change', browserSync.reload);
-});
+// gulp.task('default', ['build'], function() {
+//
+//     browserSync.init({
+//         server: "./"
+//         /* proxy: {your_vhost} - указав тут имя виртуального хоста в виде строки, можно работать и с серверной частью */
+//     });
+//
+//     gulp.watch([path.watch.tpl], ['build']);
+//     gulp.watch([path.watch.html, path.watch.css, path.watch.js]).on('change', browserSync.reload);
+// });
 
 
 /*  Версия для Gulp 4   */
 
-/*
 gulp.task('default', gulp.series('build', function() {
 
     browserSync.init({
@@ -73,6 +72,6 @@ gulp.task('default', gulp.series('build', function() {
     });
 
     gulp.watch([path.watch.tpl, path.watch.scss], gulp.series('build'));
-    gulp.watch([path.watch.html, path.watch.scss]).on('change', browserSync.reload);
+    gulp.watch([path.watch.html, path.watch.scss, path.watch.js]).on('change', browserSync.reload);
 }));
-*/
+

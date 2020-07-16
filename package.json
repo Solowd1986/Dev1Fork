@@ -4,16 +4,36 @@
   "description": "",
   "main": "gulpfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack",
+    "build": "webpack --mode production",
+    "dev": "webpack-dev-server --mode development --open --watch"
   },
+  "browserslist": "> 0.25%, not dead",
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "babel-loader": "^8.1.0",
     "browser-sync": "^2.26.7",
-    "gulp": "^3.9.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.6.0",
+    "gulp": "^4.0.2",
     "gulp-nunjucks": "^5.0.1",
-    "gulp-rename": "^1.4.0",
-    "require-dir": "^1.2.0"
+    "gulp-rename": "^2.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "nunjucks-loader": "^3.0.0",
+    "nunjucks-webpack-plugin": "^5.0.0",
+    "require-dir": "^1.2.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.2",
+    "script-ext-html-webpack-plugin": "^2.1.4",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }
