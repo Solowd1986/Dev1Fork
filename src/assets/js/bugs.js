@@ -1,6 +1,6 @@
 "use strict";
 
-import "../../../inc/_main.scss";
+import "../../../inc/main.scss";
 
 
 async function f1() {

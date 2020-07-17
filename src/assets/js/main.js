@@ -1,12 +1,16 @@
 "use strict";
 
-import "./bugs.js";
+//import "./bugs.js";
 
-
-
-
+/*
 let flag = true;
 let run = false;
+
+console.log(12);
+
+
+
+
 
 
 function scrollDelay({directionToBottom = false} = {}) {
@@ -36,10 +40,11 @@ function scrollDelay({directionToBottom = false} = {}) {
 }
 
 
-
 let initialScroll = 0;
 
 window.addEventListener("scroll", function (evt) {
+    console.log(1);
+    
     let maxScroll = Math.round(window.pageYOffset);
     if (maxScroll > initialScroll) {
         initialScroll = maxScroll;
@@ -50,7 +55,13 @@ window.addEventListener("scroll", function (evt) {
     }
 });
 
+*/
 
+async function f1() {
+    await Promise.resolve()
+}
+
+f1();
 
 
 

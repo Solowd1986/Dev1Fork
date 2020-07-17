@@ -28,10 +28,6 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.njk$/,
-                loader: 'nunjucks-loader'
-            },
-            {
                 test: /\.s[ac]ss$/i,
                 use: [
                     miniCssExtractPlugin.loader,
@@ -50,6 +46,10 @@ module.exports = {
                         presets : ["@babel/preset-env"]
                     }
                 }
+            },
+            {
+                test: /\.(njk|nunjucks)$/,
+                loader: 'nunjucks-loader'
             }
         ],
     },
@@ -57,10 +57,44 @@ module.exports = {
 
         new htmlWebpackPlugin({
             filename: "index.html",
+            template: "../../../inc/test-index.njk",
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true
+            }
+        }),
+
+        new ScriptExtHtmlWebpackPlugin({
+            defaultAttribute: "defer",
+            module: /\.js$/i,
+        }),
+
+        new miniCssExtractPlugin({
+            filename: "bundle.[hash].css"
+        }),
+
+        // new NunjucksWebpackPlugin({
+        //     templates: [
+        //         {
+        //             from: "inc/test-index.njk",
+        //             to: "../inc/template.html"
+        //         }
+        //     ]
+        // }),
+
+        new CleanWebpackPlugin()
+    ],
+
+
+/*
+    plugins: [
+
+        new htmlWebpackPlugin({
+            filename: "index.html",
             template: path.resolve(__dirname, "dist/template.html"),
             minify: {
-                //removeComments: true,
-                //collapseWhitespace: true
+                removeComments: true,
+                collapseWhitespace: true
             }
         }),
         new ScriptExtHtmlWebpackPlugin({
@@ -83,5 +117,6 @@ module.exports = {
         new CleanWebpackPlugin()
     ]
 
+*/
 
 };
