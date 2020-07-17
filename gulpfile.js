@@ -105,11 +105,20 @@ gulp.task('html-inject', function() {
 
 
 
-
+gulp.task('sc', function () {
+    return gulp.src("./inc/css")
+        .pipe(clean())
+        .pipe(gulp.src("./inc/scss/*.scss"))
+        .pipe(sass())
+        .pipe(RevAll.revision())
+        .pipe(gulp.dest("./inc/css"));
+});
 
 
 
 gulp.task('clean', () => gulp.src(paths.build.root_clean).pipe(clean()));
+
+
 
 gulp.task('babel-js-minify', () =>
     gulp.src(paths.src.js)
@@ -122,8 +131,24 @@ gulp.task('babel-js-minify', () =>
 );
 
 
+// gulp.task('scss', function () {
+//     return gulp.src(paths.src.scss)
+//         .pipe(sourcemaps.init())
+//         .pipe(sass())
+//         .pipe(autoprefixer({cascade: false}))
+//         .pipe(cleanCSS({
+//             //compatibility: 'ie8',
+//             //format: 'beautify'
+//         }))
+//         .pipe(RevAll.revision())
+//         .pipe(sourcemaps.write())
+//         .pipe(gulp.dest(paths.build.css));
+// });
+
 gulp.task('scss', function () {
-    return gulp.src(paths.src.scss)
+    return gulp.src(paths.build.css)
+        .pipe(clean())
+        .pipe(gulp.src(paths.src.scss))
         .pipe(sourcemaps.init())
         .pipe(sass())
         .pipe(autoprefixer({cascade: false}))
@@ -133,9 +158,10 @@ gulp.task('scss', function () {
         }))
         .pipe(RevAll.revision())
         .pipe(sourcemaps.write())
-
         .pipe(gulp.dest(paths.build.css));
 });
+
+
 
 
 gulp.task('template-build', function() {
@@ -150,7 +176,18 @@ gulp.task('template-build', function() {
 });
 
 
-gulp.task('default', gulp.series('clean', 'scss', 'babel-js-minify', 'template-build', function() {
+gulp.task('directories', function () {
+    return gulp.src('*.*', {read: false})
+        .pipe(gulp.dest('./dist/css'))
+        .pipe(gulp.dest('./dist/js'))
+        .pipe(gulp.dest('./dist/img'))
+        .pipe(gulp.dest('./dist/img/sprites'))
+        .pipe(gulp.dest('./dist/fonts'))
+});
+
+
+
+gulp.task('default', gulp.series('clean', 'directories', 'scss', 'babel-js-minify', 'template-build', function() {
 
     browserSync.init({
         //server: "./",
