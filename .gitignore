@@ -3,4 +3,7 @@
 /node_modules
 /robots.txt
 /favicon.ico
+/dist/*
 /dist
+/inc
+
