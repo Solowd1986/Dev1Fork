@@ -69,6 +69,7 @@ const paths = {
 
 const inject = require('gulp-inject');
 
+
 gulp.task('index', function () {
     let target = gulp.src('./inc/index.html');
     // It's not necessary to read the files (will speed up things), we're only after their paths:
@@ -99,7 +100,7 @@ gulp.task('html-inject', function() {
             extname: ".html"
         }))
         .pipe(inject(gulp.src(['./dist/js/main.js', './dist/css/main.css'], {read: false}), {removeTags: true}))
-        //.pipe(htmlmin({ collapseWhitespace: true, removeComments: true }))
+        .pipe(htmlmin({ collapseWhitespace: true, removeComments: true }))
         .pipe(gulp.dest('./'))
 });
 
@@ -116,19 +117,50 @@ gulp.task('sc', function () {
 
 
 
+const path = require("path");
 gulp.task('clean', () => gulp.src(paths.build.root_clean).pipe(clean()));
 
 
 
-gulp.task('babel-js-minify', () =>
-    gulp.src(paths.src.js)
+gulp.task("rename", function () {
+    return gulp.src("./inc/main.js")
+
+        .pipe(RevAll.revision({
+                transformFilename: function (file, hash) {
+                    let ext = path.extname(file.path);
+                    return hash.substr(0, 15) + "." + ext; // 3410c.filename.ext
+                },
+            })
+        )
+
+        .pipe(gulp.dest("./inc/"));
+});
+
+
+
+
+gulp.task('babel-js-minify', () => {
+
+
+    return gulp.src(paths.build.js)
+        .pipe(clean())
+        .pipe(gulp.src(paths.src.js))
         .pipe(babel({
             presets: ['@babel/env']
         }))
-        .pipe(RevAll.revision())
+
+        .pipe(RevAll.revision({
+                transformFilename: function (file, hash) {
+                    let ext = path.extname(file.path);
+                    return hash.substr(0, 15) + ext; // 3410c.filename.ext
+                },
+            })
+        )
+
+
         .pipe(uglify())
         .pipe(gulp.dest(paths.build.js))
-);
+});
 
 
 // gulp.task('scss', function () {
@@ -149,6 +181,7 @@ gulp.task('scss', function () {
     return gulp.src(paths.build.css)
         .pipe(clean())
         .pipe(gulp.src(paths.src.scss))
+
         .pipe(sourcemaps.init())
         .pipe(sass())
         .pipe(autoprefixer({cascade: false}))
@@ -156,7 +189,17 @@ gulp.task('scss', function () {
             //compatibility: 'ie8',
             //format: 'beautify'
         }))
-        .pipe(RevAll.revision())
+
+
+        .pipe(RevAll.revision({
+                transformFilename: function (file, hash) {
+                    let ext = path.extname(file.path);
+                    return hash.substr(0, 15) + "." + ext; // 3410c.filename.ext
+                },
+            })
+        )
+
+
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(paths.build.css));
 });

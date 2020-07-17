@@ -2,14 +2,13 @@
 
 //import "./bugs.js";
 
+console.log(1);
+
 /*
 let flag = true;
 let run = false;
 
 console.log(12);
-
-
-
 
 
 
