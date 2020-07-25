@@ -62,7 +62,7 @@ gulp.task('clean', () => {
 });
 
 
-console.log(13);
+console.log(1);
 
 
 /*  Создание директорий проекта
