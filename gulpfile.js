@@ -28,6 +28,10 @@ const inject = require('gulp-inject');
 const htmlmin = require('gulp-htmlmin');
 const nunjucks = require('gulp-nunjucks');
 
+const dom  = require('gulp-dom');
+
+
+
 
 const paths = {
     src: {
@@ -109,13 +113,33 @@ const buffer = require('vinyl-buffer');
 
 
 
+
+
+
+
 gulp.task('clean-scripts', function () {
     return gulp.src('./dist/js/*.js', {read: false})
         .pipe(clean());
 });
 
 
-gulp.task('babel-js-minify', gulp.series(['clean-scripts'], () => {
+
+gulp.task('babel-js-minify-dev', gulp.series(['clean-scripts'], () => {
+        return gulp.src(paths.src.js)
+        .pipe(RevAll.revision({
+                transformFilename: function (file, hash) {
+                    let ext = path.extname(file.path);
+                    return hash.substr(0, 15) + ext;
+                },
+            })
+        )
+        //.pipe(uglify())
+        .pipe(gulp.dest(paths.build.js))
+}));
+
+
+
+gulp.task('babel-js-minify-prod', gulp.series(['clean-scripts'], () => {
     return browserify({
         entries: [paths.src.js],
         debug: true,
@@ -124,9 +148,10 @@ gulp.task('babel-js-minify', gulp.series(['clean-scripts'], () => {
                 plugins: ['@babel/transform-runtime', '@babel/plugin-proposal-class-properties'],
                 presets: ['@babel/preset-env']
             }),
-        ],
+        ]
+        ,
     }).bundle()
-        .pipe(source('main1.js'))
+        .pipe(source('main.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(RevAll.revision({
@@ -136,21 +161,11 @@ gulp.task('babel-js-minify', gulp.series(['clean-scripts'], () => {
                 },
             })
         )
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(gulp.dest(paths.build.js))
 }));
 
 
-
-var dom  = require('gulp-dom');
-
-gulp.task('html', function() {
-    return gulp.src('./index.html')
-        .pipe(dom(function(){
-            return this.querySelectorAll('script')[0].setAttribute('type', 'module');
-        }))
-        .pipe(gulp.dest('./public/'));
-});
 
 
 
@@ -187,7 +202,7 @@ gulp.task('template-build', function() {
     5. template-build - генерим шаблоны
 ================================
 */
-gulp.task('default', gulp.series('clean', 'directories', 'scss', 'babel-js-minify', 'template-build', function() {
+gulp.task('default', gulp.series('clean', 'directories', 'scss', 'babel-js-minify-prod', 'template-build', function() {
      browserSync.init({
         //server: "./",
         proxy: paths.proxy
@@ -195,6 +210,90 @@ gulp.task('default', gulp.series('clean', 'directories', 'scss', 'babel-js-minif
 
     gulp.watch(["./src/assets/tpl/**/*.njk", "./src/assets/tpl/**/_*.njk"]).on('change', gulp.series('template-build', browserSync.reload));
     gulp.watch("./src/assets/scss/**/*.scss").on('change', gulp.series('scss', 'template-build', browserSync.reload));
-    gulp.watch("./src/assets/js/**/*.js").on('change', gulp.series('babel-js-minify', 'template-build', browserSync.reload));
+    gulp.watch("./src/assets/js/**/*.js").on('change', gulp.series('babel-js-minify-prod', 'template-build', browserSync.reload));
 }));
+
+
+
+
+
+
+
+
+
+
+
+/*
+================================
+*/
+
+
+
+
+
+
+
+gulp.task('template-dev', function() {
+    return gulp.src([paths.src.tpl, paths.src.tpl_hide])
+        .pipe(nunjucks.compile())
+        .pipe(rename({
+            extname: ".html"
+        }))
+        .pipe(inject(gulp.src(['./src/assets/js/main.js', './src/assets/scss/main.css'], {read: false}), {removeTags: true}))
+        .pipe(dom(function(){
+            return this.querySelectorAll('script')[0].setAttribute('type', 'module');
+        }))
+        .pipe(gulp.dest("./"))
+});
+
+
+gulp.task('dev', gulp.series('template-dev', function() {
+    browserSync.init({
+        //server: "./",
+        proxy: paths.proxy
+    });
+
+    gulp.watch(["./src/assets/tpl/**/*.njk", "./src/assets/tpl/**/_*.njk", "./src/assets/js/main.js", "./src/assets/scss/main.css"]).on('change', gulp.series('template-dev', browserSync.reload));
+    gulp.watch(["./src/assets/js/main.js", "./src/assets/scss/main.css"]).on('change',  browserSync.reload);
+    //gulp.watch("./src/assets/scss/**/*.scss").on('change', gulp.series('scss', 'template-build', browserSync.reload));
+    //gulp.watch("./src/assets/js/**/*.js").on('change', gulp.series('babel-js-minify-prod', 'template-build', browserSync.reload));
+}));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*================================*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
