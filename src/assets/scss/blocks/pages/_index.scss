@@ -8,12 +8,13 @@
     5. Все элементы тянутся вниз так, главное - поддержка вложенности, используя класс element-flex-grow
 ================================
 */
-
-.element-flex-grow {
+.flex-grow-bottom {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
 }
+/*================================*/
+
 
 
 .content {
