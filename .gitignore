@@ -8,3 +8,5 @@
 /dist
 
 
+/inc/webpack/out/bundle.js
+/inc/webpack/out/index.html
