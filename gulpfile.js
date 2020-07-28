@@ -232,11 +232,6 @@ gulp.task('default', gulp.series('clean', 'directories', 'scss', 'babel-js-minif
 */
 
 
-
-
-
-
-
 gulp.task('template-dev', function() {
     return gulp.src([paths.src.tpl, paths.src.tpl_hide])
         .pipe(nunjucks.compile())
@@ -263,28 +258,42 @@ gulp.task('dev', gulp.series('template-dev', function() {
     //gulp.watch("./src/assets/js/**/*.js").on('change', gulp.series('babel-js-minify-prod', 'template-build', browserSync.reload));
 }));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*================================*/
 
 
 
 
+
+
+gulp.task('build_dev', function() {
+    return gulp.src([paths.src.tpl, paths.src.tpl_hide])
+        .pipe(nunjucks.compile())
+
+        .pipe(rename({
+            extname: ".html"
+        }))
+        .pipe(inject(gulp.src(['./src/assets/js/main.js', './src/assets/scss/main.css'], {read: false}), {removeTags: true}))
+        .pipe(dom(function(){
+            return this.querySelectorAll('script')[0].setAttribute('type', 'module');
+        }))
+        .pipe(gulp.dest("./"))
+});
+
+
+gulp.task('gulp-dev', gulp.series('build_dev', function() {
+    browserSync.init({
+        server: "./"
+        //proxy: paths.proxy
+    });
+
+    //browserSync.watch();
+
+    //browserSync.watch(["./*.html", paths.src.scss, paths.src.js]).on("change", browserSync.reload);
+    //gulp.watch([paths.src.tpl], gulp.series('build_dev'));
+
+    //gulp.watch([paths.src.tpl, paths.src.scss, paths.src.js], gulp.series('build_dev'));
+   //gulp.watch(["./*.html", paths.src.scss, "./src/assets/js/main.js"]).on('change', browserSync.reload);
+}));
 
 
 
