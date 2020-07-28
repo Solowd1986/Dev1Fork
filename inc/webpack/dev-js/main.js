@@ -1,6 +1,13 @@
 "use strict";
 
-console.log("webpack");
+
+function slle() {
+    console.log("12")
+}
+
+const mane = "12ggg";
+
+console.log("webpack1");
 
 
 
