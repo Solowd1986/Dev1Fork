@@ -21,7 +21,11 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: "./inc/webpack/dev-js/index.hbs"
-        })
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[hash].css',
+            chunkFilename: '[id].css',
+        }),
     ],
     module: {
         rules: [
@@ -32,20 +36,7 @@ module.exports = {
             {
                 test: /\.scss$/,
                 use: [
-                    // {
-                    //     loader: 'style-loader',
-                    //     options: {
-                    //         injectType: 'linkTag'
-                    //     }
-                    // },
-                    // {
-                    //     loader: 'file-loader',
-                    //     options: {
-                    //         name: "[name].[hash].css",
-                    //         publicPath: path.resolve(__dirname, "inc/webpack/dev-css/") // depends on your project architecture
-                    //     }
-                    // },
-                    "style-loader",
+                    MiniCssExtractPlugin.loader,
                     "css-loader",
                     "sass-loader"
                 ]

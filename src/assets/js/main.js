@@ -12,7 +12,15 @@ const excel = new Excel({
 
 excel.render();
 
+class User {
+    tick() {
+        console.log(12);
+    }
+}
 
+let u = new User();
+u["tick"]();
+u.tick();
 
 
 
