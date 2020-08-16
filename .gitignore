@@ -6,6 +6,8 @@
 
 /dist/*
 /dist
+/out
+/inc
 
 
 /inc/webpack/out/bundle.js
