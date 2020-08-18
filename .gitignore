@@ -4,11 +4,9 @@
 /robots.txt
 /favicon.ico
 
-/dist/*
 /dist
 /out
 /inc
-
 
 /inc/webpack/out/bundle.js
 /inc/webpack/out/index.html
