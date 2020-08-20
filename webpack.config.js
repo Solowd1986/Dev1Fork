@@ -8,6 +8,8 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
+const CopyPlugin = require('copy-webpack-plugin');
+
 module.exports = {
     entry: path.resolve(__dirname, "src/assets/js/main.js"),
     output: {
@@ -42,6 +44,14 @@ module.exports = {
             filename: '[name].css',
             //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов, нужно очищать диреткорию
         }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, "src/assets/img/"),
+                    to: './img'
+                },
+            ],
+        }),
     ],
     module: {
         rules: [
@@ -64,7 +74,20 @@ module.exports = {
             // {
             //     test: /\.js$/, exclude: /node_modules/,
             //     loader: "babel-loader"
-            // }
+            // },
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: "./"
+                        }
+                    },
+
+                ]
+            }
         ],
     }
 };
