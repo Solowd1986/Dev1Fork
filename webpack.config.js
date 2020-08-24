@@ -14,7 +14,7 @@ module.exports = {
     entry: path.resolve(__dirname, "src/assets/js/main.js"),
     output: {
         filename: "bundle.js",
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "dist")
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -29,7 +29,15 @@ module.exports = {
     // Помни, что UglifyJsPlugin нативно работает лишь с ES5 синтаксисом, поэтому для использования классов и прочего,
     // нужно сразу же использовать babel
     optimization: {
-        minimizer: [new UglifyJsPlugin(), new OptimizeCssAssetsPlugin({})],
+        minimizer: [
+            new UglifyJsPlugin(),
+            new OptimizeCssAssetsPlugin({
+                cssProcessor: require('cssnano'),
+                cssProcessorPluginOptions: {
+                    preset: ['default', { discardComments: { removeAll: true } }],
+                },
+                canPrint: true
+            })],
     },
     plugins: [
         //new CleanWebpackPlugin(), // Данный плагин очищает директорию output при каждой сборке проекта
@@ -44,14 +52,14 @@ module.exports = {
             filename: '[name].css',
             //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов, нужно очищать диреткорию
         }),
-        new CopyPlugin({
-            patterns: [
-                {
-                    from: path.resolve(__dirname, "src/assets/img/"),
-                    to: './img'
-                },
-            ],
-        }),
+        // new CopyPlugin({
+        //     patterns: [
+        //         {
+        //             from: path.resolve(__dirname, "src/assets/img/"),
+        //             to: './img'
+        //         },
+        //     ],
+        // }),
     ],
     module: {
         rules: [
@@ -67,9 +75,16 @@ module.exports = {
                     "sass-loader"
                 ]
             },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader",
+                ]
+            },
             /*
             * Тут мы подключаем babel, закомментируй при обычной разработке. Также помни, что должен быть
-            * файд .bablerc в корне проекта, иначе ничего траспилироваться не будет
+            * файл .bablerc в корне проекта, иначе ничего траспилироваться не будет
             * */
             // {
             //     test: /\.js$/, exclude: /node_modules/,
@@ -81,8 +96,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: '[name].[ext]',
-                            outputPath: "./"
+                            name: 'images/[name].[ext]',
                         }
                     },
 
