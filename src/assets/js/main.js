@@ -3,7 +3,9 @@
 import "normalize.css";
 import "../scss/main.scss";
 
-console.log(212);
+require.context('../img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
+
+console.log(2181);
 
 
 

@@ -8,7 +8,14 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const ImageminPlugin = require("imagemin-webpack");
+
+const imageminGifsicle = require("imagemin-gifsicle");
+const imageminPngquant = require("imagemin-pngquant");
+const imageminSvgo = require("imagemin-svgo");
+const imageminMozjpeg = require('imagemin-mozjpeg');
 
 module.exports = {
     entry: path.resolve(__dirname, "src/assets/js/main.js"),
@@ -40,7 +47,6 @@ module.exports = {
             })],
     },
     plugins: [
-        //new CleanWebpackPlugin(), // Данный плагин очищает директорию output при каждой сборке проекта
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'src/tpl/index.hbs') // Плагин, для обработки файлов с расширением hbs
         }),
@@ -52,7 +58,7 @@ module.exports = {
             filename: '[name].css',
             //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов, нужно очищать диреткорию
         }),
-        // new CopyPlugin({
+        // new CopyWebpackPlugin({
         //     patterns: [
         //         {
         //             from: path.resolve(__dirname, "src/assets/img/"),
@@ -60,6 +66,11 @@ module.exports = {
         //         },
         //     ],
         // }),
+
+        // Данный плагин очищает директорию output при каждой сборке проекта, нюанс в том, что он очищает папку, и те
+        // файлы, которые не пересоздаются (так как их не меняли), такие как шаблоны, удаляются и не появлются, но,
+        // если внести изменения в файл шаблона, то все удалится, а новый шаблон будет создан.
+        //new CleanWebpackPlugin({}),
     ],
     module: {
         rules: [
@@ -90,16 +101,55 @@ module.exports = {
             //     test: /\.js$/, exclude: /node_modules/,
             //     loader: "babel-loader"
             // },
+
+            /*
+            *   Правила обработки изображений такие:
+            *   1. Изображения вставляемые инлайн прописываются относительно dist папки, например, просто "./img/pic.jpeg"
+            *   2. Изображения background прописываются от входного js-файла, например, "../img/pic.jpeg"
+            *   3. Опция outputPath указывает, куда будут помещены картинки, тут это будет внутри dist: img/pic.jpeg
+            *   4. Сначала файлы будут пропущены через минифицирующий лоадер img-loader, а потом file-loader их переместит
+            *   5. Чтобы картинки были обработаны, они должны быть импортированы в базовый js-файл: require.context('../img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
+            *   6. Все минификаторы, такие как imageminGifsicle/imageminMozjpeg/etc должны быть установлены через npm
+            *
+            *   Вопрос: почему изображения инлайн работают от dist папки, а background - нет?
+            *   Потому, что background содержится в scss-файле, а тот импортирован в основной js-файл, и при обработке поиск
+            *   идет по пути от этого файла, а вот инлайн вставляется в файл-шаблон, а ото не импортируется в основной js-файл,
+            *   и его пути не вызывают проблем
+            * */
             {
-                test: /\.(jpe?g|png|gif|svg)$/i,
+                test: /\.(jpg|png|gif|svg)$/i,
                 use: [
                     {
                         loader: 'file-loader',
                         options: {
-                            name: 'images/[name].[ext]',
+                            outputPath: 'img',
+                            name: '[name].[ext]'
                         }
                     },
-
+                    {
+                        loader: 'img-loader',
+                        options: {
+                            plugins: [
+                                imageminGifsicle({
+                                    interlaced: false
+                                }),
+                                imageminMozjpeg({
+                                    progressive: true,
+                                    arithmetic: false
+                                }),
+                                imageminPngquant({
+                                    floyd: 0.5,
+                                    speed: 2
+                                }),
+                                imageminSvgo({
+                                    plugins: [
+                                        { removeTitle: true },
+                                        { convertPathData: false }
+                                    ]
+                                })
+                            ]
+                        }
+                    }
                 ]
             }
         ],
