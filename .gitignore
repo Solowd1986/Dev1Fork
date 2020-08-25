@@ -2,7 +2,7 @@
 /.idea
 /node_modules
 /robots.txt
-/favicon.ico
+/src/assets/img/favicon.ico
 
 /dist
 /out

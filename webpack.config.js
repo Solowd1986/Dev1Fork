@@ -1,4 +1,4 @@
-"use strict";
+
 
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -23,25 +23,30 @@ module.exports = {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist")
     },
-    devtool: 'inline-source-map',
+    devtool: 'eval-cheap-module-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'), // Точка для поиска файлов под запуск, html/etc
-        compress: true,
+        overlay: {
+            warnings: true,
+            errors: true
+        },
+        compress: true, // Enable gzip compression for everything served
         //open: true, // Открывает сайт в браузере автоматически, это же работает как --open в блоке scripts для package.json
         port: 9000,
-        writeToDisk: true, // По-умолчанию, файлы существауют виртульно, данная опция будет их создавать/перезаписывать
+        //writeToDisk: true, // По-умолчанию, файлы существауют виртульно, данная опция будет их создавать/перезаписывать
     },
     // Данный блок это минимизация css средствами OptimizeCssAssetsPlugin, запускай через npm run prod
     // Также, так как мы переопределяем блок оптимизации, для продакшена мы добавляем минификатор js-файла -UglifyJs
     // Помни, что UglifyJsPlugin нативно работает лишь с ES5 синтаксисом, поэтому для использования классов и прочего,
-    // нужно сразу же использовать babel
+    // нужно сразу же использовать babel - то есть раскомментируй его лоадер ниже, иначе будет ошибка типа ERROR in bundle.js from UglifyJs
+    // Unexpected token: keyword «const»
     optimization: {
         minimizer: [
             new UglifyJsPlugin(),
             new OptimizeCssAssetsPlugin({
                 cssProcessor: require('cssnano'),
                 cssProcessorPluginOptions: {
-                    preset: ['default', { discardComments: { removeAll: true } }],
+                    preset: ['default', {discardComments: {removeAll: true}}],
                 },
                 canPrint: true
             })],
@@ -54,18 +59,22 @@ module.exports = {
             filename: 'page.html',
             template: path.resolve(__dirname, 'src/tpl/page.hbs')
         }),
+        new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
+            filename: '404.html',
+            template: path.resolve(__dirname, 'src/tpl/404.hbs')
+        }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
             //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов, нужно очищать диреткорию
         }),
-        // new CopyWebpackPlugin({
-        //     patterns: [
-        //         {
-        //             from: path.resolve(__dirname, "src/assets/img/"),
-        //             to: './img'
-        //         },
-        //     ],
-        // }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, "src/assets/img/favicon.ico"),
+                    to: './'
+                },
+            ],
+        }),
 
         // Данный плагин очищает директорию output при каждой сборке проекта, нюанс в том, что он очищает папку, и те
         // файлы, которые не пересоздаются (так как их не меняли), такие как шаблоны, удаляются и не появлются, но,
@@ -96,6 +105,7 @@ module.exports = {
             /*
             * Тут мы подключаем babel, закомментируй при обычной разработке. Также помни, что должен быть
             * файл .bablerc в корне проекта, иначе ничего траспилироваться не будет
+            * Включи его для корректной работы UglifyJS
             * */
             // {
             //     test: /\.js$/, exclude: /node_modules/,
@@ -143,8 +153,8 @@ module.exports = {
                                 }),
                                 imageminSvgo({
                                     plugins: [
-                                        { removeTitle: true },
-                                        { convertPathData: false }
+                                        {removeTitle: true},
+                                        {convertPathData: false}
                                     ]
                                 })
                             ]
