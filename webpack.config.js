@@ -17,6 +17,9 @@ const imageminPngquant = require("imagemin-pngquant");
 const imageminSvgo = require("imagemin-svgo");
 const imageminMozjpeg = require('imagemin-mozjpeg');
 
+const autoprefixer = require("autoprefixer");
+const cssnano = require("cssnano");
+
 module.exports = {
     entry: path.resolve(__dirname, "src/assets/js/main.js"),
     output: {
@@ -44,12 +47,14 @@ module.exports = {
         minimizer: [
             new UglifyJsPlugin(),
             new OptimizeCssAssetsPlugin({
-                cssProcessor: require('cssnano'),
+                //cssProcessor: require('cssnano'), - эту задачу выполняет css-nano из лоадера ниже, этот блок
+                // только для того, чтобы удалять комменты, которые nano не удаляет/пропускает
                 cssProcessorPluginOptions: {
                     preset: ['default', {discardComments: {removeAll: true}}],
                 },
                 canPrint: true
-            })],
+            })
+        ],
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -92,6 +97,14 @@ module.exports = {
                 use: [
                     MiniCssExtractPlugin.loader,
                     "css-loader",
+                    {
+                        loader: 'postcss-loader', // пропускаем через autoprefixer наш css полученный из sass
+                        options: {
+                            plugins: () => [autoprefixer(), cssnano({
+                                discardComments: {removeAll: true}
+                            })]
+                        }
+                    },
                     "sass-loader"
                 ]
             },
@@ -107,11 +120,10 @@ module.exports = {
             * файл .bablerc в корне проекта, иначе ничего траспилироваться не будет
             * Включи его для корректной работы UglifyJS
             * */
-            // {
-            //     test: /\.js$/, exclude: /node_modules/,
-            //     loader: "babel-loader"
-            // },
-
+            {
+                test: /\.js$/, exclude: /node_modules/,
+                loader: "babel-loader"
+            },
             /*
             *   Правила обработки изображений такие:
             *   1. Изображения вставляемые инлайн прописываются относительно dist папки, например, просто "./img/pic.jpeg"
