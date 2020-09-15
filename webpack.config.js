@@ -27,7 +27,6 @@ module.exports = {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist")
     },
-
     devtool: 'eval-cheap-module-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'), // Точка для поиска файлов под запуск, html/etc
@@ -61,6 +60,7 @@ module.exports = {
         ],
     },
     plugins: [
+        // HtmlWebPackPlugin - основной плагин для генерации html через webpack
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'src/tpl/index.hbs') // Плагин, для обработки файлов с расширением hbs
         }),
@@ -72,6 +72,9 @@ module.exports = {
             filename: '404.html',
             template: path.resolve(__dirname, 'src/tpl/404.hbs')
         }),
+
+        // MiniCssExtractPlugin - создает отдельный файл css для того, что импортировано в основной js-файл. Заменяет
+        // style-loader, который включает стили инлайн в блок style, что как правило не нужно
         new MiniCssExtractPlugin({
             filename: '[name].css',
             //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов
@@ -130,7 +133,7 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             name: '[name].[ext]',
-                            outputPath: 'assets/fonts/'
+                            outputPath: 'assets/fonts'
                         }
                     }
                 ]
@@ -144,23 +147,13 @@ module.exports = {
                 test: /\.js$/, exclude: /node_modules/,
                 loader: "babel-loader"
             },
+
             /*
             *   Правила обработки изображений такие:
-            *   1. Изображения вставляемые инлайн прописываются относительно dist папки, например, для папки с изображениями
-            *      img, которая помещается в dist, путь в шаблоне такой: "./img/pic.jpeg"
-            *   2. Изображения background прописываются от входного js-файла, например, "../assets/img/pic.jpeg"
-            *   3. Опция outputPath указывает, куда будут помещены картинки, тут это будет внутри dist: img/pic.jpeg
-            *   4. Сначала файлы будут пропущены через минифицирующий лоадер img-loader, а потом file-loader их переместит
-            *   5. Чтобы картинки были обработаны, они должны быть импортированы в базовый js-файл: require.context('../img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
-            *   6. Все минификаторы, такие как imageminGifsicle/imageminMozjpeg/etc должны быть установлены через npm
-            *
-            *   Вопрос: почему изображения инлайн работают от dist папки, а background - нет?
-            *   Потому, что background содержится в scss-файле, а тот импортирован в основной js-файл, и при обработке поиск
-            *   идет по пути от этого файла, а вот инлайн вставляется в файл-шаблон, а ото не импортируется в основной js-файл,
-            *   и его пути не вызывают проблем. Уточню, что когда ты прописываешь background относительно рабочей js-папки, то это
-            *   не мешает пути поменяться при формировании шаблона, то есть он преобразуется в путь до файла в результирущей папке
-            *   dist, вместо того относительного пути до рабочей папки, что ты пишешь изначально. Если же сразу писать путь относителньо
-            *   выходной папки, то будет ошибка, так как на этом этапе обработки этого файла там пока нет.
+            *   1. Опция outputPath указывает, куда будут помещены картинки, тут это будет внутри dist: img/pic.jpeg
+            *   2. Сначала файлы будут пропущены через минифицирующий лоадер img-loader, а потом file-loader их переместит
+            *   3. Чтобы картинки были обработаны, они должны быть импортированы в базовый js-файл: require.context('../img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
+            *   4. Все минификаторы, такие как imageminGifsicle/imageminMozjpeg/etc должны быть установлены через npm
             * */
             {
                 test: /\.(jpg|jpeg|png|gif|svg)$/i,
