@@ -20,9 +20,9 @@ const imageminMozjpeg = require('imagemin-mozjpeg');
 const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
 
-module.exports = {
 
-    entry: path.resolve(__dirname, "src/assets/js/main.js"),
+module.exports = {
+    entry: path.resolve(__dirname, "src/js/main.js"),
     output: {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist")

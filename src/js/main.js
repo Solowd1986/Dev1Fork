@@ -1,9 +1,9 @@
 
 import "normalize.css";
-import "../scss/main.scss";
+import "../assets/scss/main.scss";
 import "@babel/polyfill";
 
-require.context('../img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
+require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
 
 
 import {cnt} from "./data";
