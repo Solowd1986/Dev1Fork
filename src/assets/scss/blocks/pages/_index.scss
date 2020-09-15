@@ -38,6 +38,68 @@
 }
 
 
+/*  Блок корзины товаров, тестовый
+================================
+*/
+
+.font-test {
+  font-family: "Railway1", "Times New Roman", sans-serif;
+}
+
+
+.list-goods {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.goods-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 300px;
+  margin: 0 auto 10px;
+}
+
+.goods-desc {
+  font-size: 20px;
+  font-weight: 300;
+  margin-right: 20px;
+}
+
+.wrapper-order {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.goods-quantity {
+  margin-right: 10px;
+  padding: 5px 10px;
+  width: 40px;
+}
+
+.btn-order-cart {
+  background-color: red;
+  border-radius: 10px;
+  padding: 5px 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 300;
+
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
+  &:hover {
+    background-color: mediumvioletred;
+  }
+
+}
+
+
+
+
+
+/*================================*/
 
 .page-link {
   display: block;

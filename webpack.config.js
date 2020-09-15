@@ -21,11 +21,13 @@ const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
 
 module.exports = {
+
     entry: path.resolve(__dirname, "src/assets/js/main.js"),
     output: {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist")
     },
+
     devtool: 'eval-cheap-module-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'), // Точка для поиска файлов под запуск, html/etc
@@ -38,6 +40,8 @@ module.exports = {
         port: 9000,
         //writeToDisk: true, // По-умолчанию, файлы существауют виртульно, данная опция будет их создавать/перезаписывать
     },
+
+
     // Данный блок это минимизация css средствами OptimizeCssAssetsPlugin, запускай через npm run prod
     // Также, так как мы переопределяем блок оптимизации, для продакшена мы добавляем минификатор js-файла -UglifyJs
     // Помни, что UglifyJsPlugin нативно работает лишь с ES5 синтаксисом, поэтому для использования классов и прочего,
@@ -70,7 +74,7 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
-            //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов, нужно очищать диреткорию
+            //filename: '[hash].css', //- вариант для формирования уникальных имен выходных файлов
         }),
         /**
          * Перемещаем в выходную папку иконку сайта
@@ -87,6 +91,7 @@ module.exports = {
         // Данный плагин очищает директорию output при каждой сборке проекта, нюанс в том, что он очищает папку, и те
         // файлы, которые не пересоздаются (так как их не меняли), такие как шаблоны, удаляются и не появлются, но,
         // если внести изменения в файл шаблона, то все удалится, а новый шаблон будет создан.
+
         //new CleanWebpackPlugin({}),
     ],
     module: {
@@ -118,6 +123,18 @@ module.exports = {
                     "css-loader",
                 ]
             },
+            {
+                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'assets/fonts/'
+                        }
+                    }
+                ]
+            },
             /*
             * Тут мы подключаем babel, закомментируй при обычной разработке. Также помни, что должен быть
             * файл .bablerc в корне проекта, иначе ничего траспилироваться не будет
@@ -146,12 +163,12 @@ module.exports = {
             *   выходной папки, то будет ошибка, так как на этом этапе обработки этого файла там пока нет.
             * */
             {
-                test: /\.(jpg|png|gif|svg)$/i,
+                test: /\.(jpg|jpeg|png|gif|svg)$/i,
                 use: [
                     {
                         loader: 'file-loader',
                         options: {
-                            outputPath: 'img',
+                            outputPath: 'assets/img',
                             name: '[name].[ext]'
                         }
                     },
