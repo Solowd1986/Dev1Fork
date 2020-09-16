@@ -85,7 +85,7 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 {
-                    from: path.resolve(__dirname, "src/assets/img/favicon.ico"),
+                    from: path.resolve(__dirname, "src/assets/img/favicon/"),
                     to: './'
                 },
             ],
@@ -103,6 +103,9 @@ module.exports = {
                 test: /\.(hbs|handlebars)$/,
                 loader: "handlebars-loader"
             },
+
+            // При обработке css/scss верхним (то есть последним) выполняется MiniCssExtractPlugin, он создает css файл и
+            // перемещает его в корень выходной папки, то есть dist
             {
                 test: /\.scss$/,
                 use: [

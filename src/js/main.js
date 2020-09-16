@@ -117,6 +117,16 @@ if (str.indexOf(" ") !== -1) {
 }
 
 
+const students = {name: "Bob"};
+
+
+const div = document.querySelector(".bn");
+console.dir(div.childNodes);
+
+
+
+
+
 
 class Cart {
     constructor(props) {
@@ -174,6 +184,8 @@ class Cart {
         btn.addEventListener("click", function (evt) {
             li.remove();
         });
+
+        divWrapper.appendChild(btn);
 
         li.appendChild(divWrapper);
         return li;
