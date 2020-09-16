@@ -111,18 +111,6 @@ const dataAll = {
     classes: classes
 };
 
-let str = "name ll";
-if (str.indexOf(" ") !== -1) {
-    console.log(...str);
-}
-
-
-const students = {name: "Bob"};
-
-
-const div = document.querySelector(".bn");
-console.dir(div.childNodes);
-
 
 
 
