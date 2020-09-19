@@ -3,6 +3,7 @@ import "normalize.css";
 import "../assets/scss/main.scss";
 import "@babel/polyfill";
 
+
 require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
 
 
@@ -109,7 +110,71 @@ const dataItems = [
 const dataAll = {
     dataItems: dataItems,
     classes: classes
+
 };
+
+
+
+
+const request = fetch("data.php",
+    {
+        method: "POST"
+    }
+);
+
+// request.then(result => result.json())
+//     .then(result => {
+//         console.log(result);
+//     }
+// );
+
+
+class Request {
+    constructor() {
+        this.vat = null;
+    }
+
+    static responce() {
+        return fetch("data.php", {
+            method: "POST"
+        }).then(response => {
+            console.dir(response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            } else {
+                return response.json();
+            }
+        });
+    }
+
+
+    async getData() {
+        //let res = await Request.responce();
+        return await Request.responce();
+        //console.log('res', res);
+        //return res;
+    }
+
+    result() {
+        //this.hre();
+
+        this.getData().then(res => (res));
+
+        //console.log(data);
+
+        //return this.getData().then(res => res);
+
+        //let r = data.then(res => res);
+        //console.log(data);
+        
+        //return r;
+    }
+}
+
+const res1 = new Request();
+
+
+
 
 
 
@@ -134,14 +199,14 @@ class Cart {
 
     }
 
-    cartListGenetarot(className) {
+    cartListGenerator(className) {
 
         const ul = document.createElement("ul");
         ul.classList.add(className);
         return ul;
     }
 
-    cartListItemGenetarot(item) {
+    cartListItemGenerator(item) {
         const li = document.createElement("li");
         li.classList.add(this.props.classes.item);
 
@@ -185,7 +250,7 @@ class Cart {
         ul.classList.add(this.props.classes.list);
 
         for (let item of this.props.dataItems) {
-            let li = this.cartListItemGenetarot(item);
+            let li = this.cartListItemGenerator(item);
             ul.appendChild(li)
         }
         return ul;
@@ -193,10 +258,11 @@ class Cart {
 }
 
 
-const list = new Cart(dataAll).render();
 
-const t = document.querySelector(".inner-list");
-t.appendChild(list);
+// const list = new Cart(dataAll).render();
+//
+// const t = document.querySelector(".inner-list");
+// t.appendChild(list);
 
 
 

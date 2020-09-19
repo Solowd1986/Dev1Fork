@@ -29,10 +29,13 @@ module.exports = {
     },
     devtool: 'eval-cheap-module-source-map',
     devServer: {
-        contentBase: path.resolve(__dirname, 'dist'), // Точка для поиска файлов под запуск, html/etc
+        // contentBase: path.resolve(__dirname, 'dist'), // Точка для поиска файлов под запуск, html/etc
         overlay: {
             warnings: true,
             errors: true
+        },
+        proxy: {
+           "/data.php": "http://dev1.test/src/js/data.php"
         },
         compress: true, // Enable gzip compression for everything served
         //open: true, // Открывает сайт в браузере автоматически, это же работает как --open в блоке scripts для package.json
@@ -86,6 +89,10 @@ module.exports = {
             patterns: [
                 {
                     from: path.resolve(__dirname, "src/assets/img/favicon/"),
+                    to: './'
+                },
+                {
+                    from: path.resolve(__dirname, "src/js/data.php"),
                     to: './'
                 },
             ],
