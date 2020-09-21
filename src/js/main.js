@@ -129,18 +129,20 @@ const request = fetch("data.php",
 // );
 
 
+
 class Request {
     constructor() {
         this.vat = null;
     }
 
-    static responce() {
-        return fetch("data.php", {
-            method: "POST"
+    static sendRequest(url, options = {}) {
+        return fetch(url, {
+            method: options.method
         }).then(response => {
-            console.dir(response);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                 return response.text().then(error => {
+                     throw new Error(` HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg}`);
+                 });
             } else {
                 return response.json();
             }
@@ -149,10 +151,13 @@ class Request {
 
 
     async getData() {
-        //let res = await Request.responce();
-        return await Request.responce();
-        //console.log('res', res);
-        //return res;
+        await Request.sendRequest("da1ta.php", {method: "POST"}).
+        then(res => {
+            console.log(res);
+        }).
+        catch(e => {
+            console.log(e)
+        });
     }
 
     result() {
@@ -171,7 +176,9 @@ class Request {
     }
 }
 
-const res1 = new Request();
+new Request().getData().then();
+
+
 
 
 
