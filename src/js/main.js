@@ -129,20 +129,156 @@ const request = fetch("data.php",
 // );
 
 
+const text = document.querySelector(".text");
+text.tabIndex = 0;
 
-class Request {
-    constructor() {
-        this.vat = null;
+const parentNode = document.querySelector(".parent");
+
+//
+// parentNode.addEventListener("focusin", function (evt) {
+//
+//     if (evt.target !== this) {
+//         const textarea = document.createElement("textarea");
+//         textarea.value = evt.target.innerText;
+//         evt.target.replaceWith(textarea);
+//         textarea.focus();
+//     }
+// });
+//
+// parentNode.addEventListener("focusout", function (evt) {
+//
+//     if (evt.target.nodeName !== "DIV") {
+//         const div = document.createElement("div");
+//         div.textContent += evt.target.value + '1';
+//         evt.target.replaceWith(div);
+//     }
+// });
+
+
+//
+// function onfocusElem(evt) {
+//         const textarea = document.createElement("textarea");
+//         textarea.value = evt.target.innerText;
+//         evt.target.replaceWith(textarea);
+//         textarea.focus();
+//         textarea.addEventListener("focusout", onblurElem);
+// }
+//
+//
+// function onblurElem(evt) {
+//     const div = document.createElement("div");
+//     div.textContent += evt.target.value;
+//     div.tabIndex = 0;
+//     evt.target.replaceWith(div);
+//     div.addEventListener("focusin", onfocusElem);
+// }
+//
+// text.addEventListener("focusin", onfocusElem);
+
+
+const mouse = document.querySelector("#mouse");
+
+mouse.addEventListener("click", function (evt) {
+    this.focus();
+});
+
+document.addEventListener("keydown", function (evt) {
+    switch (evt.key) {
+        case "ArrowRight" :
+            //console.log(document.activeElement.style.left );
+            let left = parseInt(document.activeElement.style.left) + 20;
+
+            
+            document.activeElement.style.left = `${left}px`;
+            break;
     }
 
+});
+
+
+const table = document.querySelector("#bagua-table");
+
+let flag = true;
+
+table.addEventListener("click", function (evt) {
+    if (evt.target.nodeName === "TD") {
+
+        debugger
+        if (!flag) {
+            return;
+        }
+        flag = false;
+
+        const td = evt.target;
+        let text = evt.target.innerHTML;
+        const textarea = document.createElement("textarea");
+        textarea.value = evt.target.innerHTML;
+        textarea.style.height = `${evt.target.clientHeight}px`;
+        textarea.style.width = `${evt.target.clientWidth}px`;
+
+        //evt.target.parentElement.append(textarea);
+        td.innerHTML = '';
+        td.append(textarea);
+
+        const ok = document.createElement("button");
+        const cancel = document.createElement("button");
+
+        ok.innerText = "OK";
+        cancel.innerText = "Cancel";
+
+        ok.style.cssText = "background-color: red; display: block; margin: 10px auto";
+        cancel.style.cssText = "background-color: red; display: block; margin: 10px auto";
+
+        td.append(ok);
+        td.append(cancel);
+
+        ok.addEventListener("click", function (evt) {
+            flag = true;
+            td.innerHTML = textarea.value;
+            textarea.remove();
+        });
+
+        cancel.addEventListener("click", function (evt) {
+            flag = true;
+            td.innerHTML = text;
+            textarea.remove();
+        });
+
+
+
+    }
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Request {
     static sendRequest(url, options = {}) {
         return fetch(url, {
             method: options.method
         }).then(response => {
             if (!response.ok) {
-                 return response.text().then(error => {
-                     throw new Error(` HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg}`);
-                 });
+                return response.text().then(error => {
+                    throw new Error(`HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i) !== null 
+                        ? error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg
+                        : "Error (RegExp returned null"}`);
+                });
             } else {
                 return response.json();
             }
@@ -151,9 +287,9 @@ class Request {
 
 
     async getData() {
-        await Request.sendRequest("da1ta.php", {method: "POST"}).
+        await Request.sendRequest("data.php", {method: "POST"}).
         then(res => {
-            console.log(res);
+            //console.log(res);
         }).
         catch(e => {
             console.log(e)
