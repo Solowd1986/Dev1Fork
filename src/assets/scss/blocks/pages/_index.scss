@@ -37,12 +37,21 @@
   background-image: url("../img/68778702_327427475.jpg");
 }
 
+.ssb {
+  &:focus {
+    outline: 1px solid red;
+    background-color: lightpink;
+  }
+}
+
 /* общие стили для таблицы, изменять их не нужно */
 
 th {
   text-align: center;
   font-weight: bold;
 }
+
+
 
 td {
   width: 150px;

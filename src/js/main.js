@@ -176,34 +176,38 @@ const parentNode = document.querySelector(".parent");
 // text.addEventListener("focusin", onfocusElem);
 
 
-const mouse = document.querySelector("#mouse");
+const inp = document.querySelector("form>input:first-of-type");
+const form = document.querySelector("form.fr");
+inp.focus();
 
-mouse.addEventListener("click", function (evt) {
-    this.focus();
-});
+console.log(document.activeElement);
+console.log(Array.from(form.elements).includes(document.activeElement));
 
-document.addEventListener("keydown", function (evt) {
-    switch (evt.key) {
-        case "ArrowRight" :
-            //console.log(document.activeElement.style.left );
-            let left = parseInt(document.activeElement.style.left) + 20;
+document.addEventListener("keyup", function (evt) {
 
-            
-            document.activeElement.style.left = `${left}px`;
-            break;
+
+    if (evt.key === "Tab" && !Array.from(form.elements).includes(document.activeElement)) {
+        form.elements[0].focus();
+    } else {
+        console.log(11);
     }
 
+    console.log(document.activeElement);
+    
+    console.log(evt.key);
+    
 });
+
+console.log(inp);
+
 
 
 const table = document.querySelector("#bagua-table");
-
 let flag = true;
 
 table.addEventListener("click", function (evt) {
     if (evt.target.nodeName === "TD") {
 
-        debugger
         if (!flag) {
             return;
         }
