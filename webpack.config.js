@@ -34,9 +34,12 @@ module.exports = {
             warnings: true,
             errors: true
         },
+        disableHostCheck: true,
         proxy: {
-           "/data.php": "http://dev1.test/src/js/data.php"
+            //"/data.php": "http://dev1.test/src/js/data.php"
         },
+        //host: "dev1.test",
+        //public: 'dev1.test',
         compress: true, // Enable gzip compression for everything served
         //open: true, // Открывает сайт в браузере автоматически, это же работает как --open в блоке scripts для package.json
         port: 9000,

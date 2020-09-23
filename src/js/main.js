@@ -50,7 +50,7 @@ function f2() {
     });
 }
 
-f2();
+
 
 
 const base = new Component(props);
@@ -116,189 +116,95 @@ const dataAll = {
 
 
 
-const request = fetch("data.php",
-    {
-        method: "POST"
-    }
-);
-
-// request.then(result => result.json())
-//     .then(result => {
-//         console.log(result);
-//     }
-// );
-
-
-const text = document.querySelector(".text");
-text.tabIndex = 0;
-
-const parentNode = document.querySelector(".parent");
-
-//
-// parentNode.addEventListener("focusin", function (evt) {
-//
-//     if (evt.target !== this) {
-//         const textarea = document.createElement("textarea");
-//         textarea.value = evt.target.innerText;
-//         evt.target.replaceWith(textarea);
-//         textarea.focus();
-//     }
-// });
-//
-// parentNode.addEventListener("focusout", function (evt) {
-//
-//     if (evt.target.nodeName !== "DIV") {
-//         const div = document.createElement("div");
-//         div.textContent += evt.target.value + '1';
-//         evt.target.replaceWith(div);
-//     }
-// });
-
-
-//
-// function onfocusElem(evt) {
-//         const textarea = document.createElement("textarea");
-//         textarea.value = evt.target.innerText;
-//         evt.target.replaceWith(textarea);
-//         textarea.focus();
-//         textarea.addEventListener("focusout", onblurElem);
-// }
-//
-//
-// function onblurElem(evt) {
-//     const div = document.createElement("div");
-//     div.textContent += evt.target.value;
-//     div.tabIndex = 0;
-//     evt.target.replaceWith(div);
-//     div.addEventListener("focusin", onfocusElem);
-// }
-//
-// text.addEventListener("focusin", onfocusElem);
-
-
-const inp = document.querySelector("form>input:first-of-type");
-const form = document.querySelector("form.fr");
-inp.focus();
-
-console.log(document.activeElement);
-console.log(Array.from(form.elements).includes(document.activeElement));
-
-document.addEventListener("keyup", function (evt) {
-
-
-    if (evt.key === "Tab" && !Array.from(form.elements).includes(document.activeElement)) {
-        form.elements[0].focus();
-    } else {
-        console.log(11);
-    }
-
-    console.log(document.activeElement);
-    
-    console.log(evt.key);
-    
-});
-
-console.log(inp);
-
-
-
-const table = document.querySelector("#bagua-table");
-let flag = true;
-
-table.addEventListener("click", function (evt) {
-    if (evt.target.nodeName === "TD") {
-
-        if (!flag) {
-            return;
-        }
-        flag = false;
-
-        const td = evt.target;
-        let text = evt.target.innerHTML;
-        const textarea = document.createElement("textarea");
-        textarea.value = evt.target.innerHTML;
-        textarea.style.height = `${evt.target.clientHeight}px`;
-        textarea.style.width = `${evt.target.clientWidth}px`;
-
-        //evt.target.parentElement.append(textarea);
-        td.innerHTML = '';
-        td.append(textarea);
-
-        const ok = document.createElement("button");
-        const cancel = document.createElement("button");
-
-        ok.innerText = "OK";
-        cancel.innerText = "Cancel";
-
-        ok.style.cssText = "background-color: red; display: block; margin: 10px auto";
-        cancel.style.cssText = "background-color: red; display: block; margin: 10px auto";
-
-        td.append(ok);
-        td.append(cancel);
-
-        ok.addEventListener("click", function (evt) {
-            flag = true;
-            td.innerHTML = textarea.value;
-            textarea.remove();
-        });
-
-        cancel.addEventListener("click", function (evt) {
-            flag = true;
-            td.innerHTML = text;
-            textarea.remove();
-        });
-
-
-
-    }
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class Request {
-    static sendRequest(url, options = {}) {
+    static sendRequest(url, options = {method: "GET"}) {
+        //console.log(url);
+        
         return fetch(url, {
-            method: options.method
+            method: options.method,
+            //body: data,
+            // headers: {
+            //     Accept: 'application/json',
+            // },
+            //mode: 'no-cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         }).then(response => {
             if (!response.ok) {
+                console.dir(response);
+                
                 return response.text().then(error => {
-                    throw new Error(`HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i) !== null 
-                        ? error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg
-                        : "Error (RegExp returned null"}`);
+                    
+                    console.log('errro', error);
+                    
+                    // throw new Error(`HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i) !== null 
+                    //     ? error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg
+                    //     : response.statusText}`);
                 });
             } else {
-                return response.json();
+                //console.dir(response);
+                //return response.text();
+                return response.text();
             }
         });
     }
 
-
-    async getData() {
-        await Request.sendRequest("data.php", {method: "POST"}).
+    async getAllData() {
+        await Request.sendRequest("data.php", {method: "GET"}).
         then(res => {
             //console.log(res);
+
+            let root = document.querySelector(".result");
+            let h3 = document.createElement("h3");
+            h3.innerText = "All data";
+            h3.style.cssText = "text-align: center";
+            root.append(h3);
+
+            let ul = document.createElement("ul");
+            let result = JSON.parse(res);
+
+            result.forEach(item => {
+                let li = document.createElement("li");
+                li.style.cssText = "padding: 5px; outline: 1px solid red; margin-bottom: 5px;";
+                for (let data in item) {
+                    let div = document.createElement("div");
+                    div.style.cssText = "padding: 2px;";
+                    div.innerText = `${data}: ${item[data]}`;
+                    li.append(div);
+                }
+                ul.append(li)
+            });
+            root.append(ul);
+
+            //console.log('all data:', JSON.parse(res));
         }).
         catch(e => {
             console.log(e)
         });
     }
+
+    async getOneItem(id) {
+        await Request.sendRequest(`data.php?id=${id}`, {method: "GET"}).
+        then(res => {
+            //document.querySelector(".error").innerHTML = res;
+            let result = JSON.parse(res);
+            console.log('one item:', result[0]);
+        }).
+        catch(e => {
+            console.log(e)
+        });
+    }
+
+    async deleteOneItem(id) {
+        await Request.sendRequest(`data.php?id=${id}`, {method: "DELETE"}).
+        then(res => {
+            console.log('delete item:', res);
+        }).
+        catch(e => {
+            console.log(e)
+        });
+    }
+
 
     result() {
         //this.hre();
@@ -316,7 +222,9 @@ class Request {
     }
 }
 
-new Request().getData().then();
+new Request().getAllData().then();
+new Request().getOneItem(12).then();
+new Request().deleteOneItem(12).then();
 
 
 
