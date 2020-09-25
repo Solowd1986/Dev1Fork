@@ -7,8 +7,6 @@ import "@babel/polyfill";
 require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
 
 
-import {cnt} from "./data";
-import info from "./data";
 
 
 const data = {
@@ -115,55 +113,37 @@ const dataAll = {
 
 
 
-
-
 class Request {
-    static sendRequest(url, options = {method: "GET"}) {
-        //console.log(url);
-        
-        return fetch(url, {
-            method: options.method,
-            //body: data,
-            // headers: {
-            //     Accept: 'application/json',
-            // },
-            //mode: 'no-cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        }).then(response => {
+    static sendRequest(url, options) {
+        if (!('headers' in options)) {
+          options.headers = {};
+        }
+        options.headers.authUser = "dsferewqrwer";
+        return fetch(url, options).then(response => {
             if (!response.ok) {
-                console.dir(response);
-                
                 return response.text().then(error => {
-                    
-                    console.log('errro', error);
-                    
-                    // throw new Error(`HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i) !== null 
-                    //     ? error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg
-                    //     : response.statusText}`);
+                    throw new Error(`HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i) !== null 
+                        ? error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg
+                        : response.statusText}`);
                 });
             } else {
-                //console.dir(response);
-                //return response.text();
                 return response.text();
             }
         });
     }
 
-    async getAllData() {
-        await Request.sendRequest("data.php", {method: "GET"}).
-        then(res => {
-            //console.log(res);
+    static rootElementGenerator(rootSelector, appendData) {
+        if (document.querySelector(rootSelector) !== -1) {
+            const root = document.querySelector(rootSelector);
 
-            let root = document.querySelector(".result");
-            let h3 = document.createElement("h3");
+            const h3 = document.createElement("h3");
             h3.innerText = "All data";
             h3.style.cssText = "text-align: center";
             root.append(h3);
 
-            let ul = document.createElement("ul");
-            let result = JSON.parse(res);
+            const ul = document.createElement("ul");
 
-            result.forEach(item => {
+            appendData.forEach(item => {
                 let li = document.createElement("li");
                 li.style.cssText = "padding: 5px; outline: 1px solid red; margin-bottom: 5px;";
                 for (let data in item) {
@@ -175,56 +155,72 @@ class Request {
                 ul.append(li)
             });
             root.append(ul);
-
-            //console.log('all data:', JSON.parse(res));
-        }).
-        catch(e => {
-            console.log(e)
-        });
+            return root;
+        }
     }
 
+    async getAllData() {
+        const request = await Request.sendRequest(`data.php`, {method: "GET"});
+        try {
+            const result = JSON.parse(request);
+            Request.rootElementGenerator(".result", result);
+        } catch (e) {
+            console.log('res', !!request);
+        }
+    }
+
+
     async getOneItem(id) {
-        await Request.sendRequest(`data.php?id=${id}`, {method: "GET"}).
-        then(res => {
-            //document.querySelector(".error").innerHTML = res;
-            let result = JSON.parse(res);
-            console.log('one item:', result[0]);
-        }).
-        catch(e => {
-            console.log(e)
-        });
+        const request = await Request.sendRequest(`data.php?id=${id}`, {method: "GET"});
+        try {
+            const result = JSON.parse(request);
+
+            const d = document.querySelector(".result");
+            //d.innerHTML = request;
+            //console.log(request);
+            console.log(result);
+            
+
+            Request.rootElementGenerator(".result", [result]);
+        } catch (e) {
+            console.log('catch res', request.length > 0 ? request : !!request);
+        }
     }
 
     async deleteOneItem(id) {
-        await Request.sendRequest(`data.php?id=${id}`, {method: "DELETE"}).
-        then(res => {
-            console.log('delete item:', res);
-        }).
-        catch(e => {
-            console.log(e)
-        });
+        const request = await Request.sendRequest(`data.php?id=${id}`, {method: "DELETE"});
+        try {
+            const result = JSON.parse(request);
+            Request.rootElementGenerator(".result", result);
+        } catch (e) {
+            console.log('res', request.length > 0 ? request : !!request);
+        }
     }
 
 
-    result() {
-        //this.hre();
+    async addOneItem() {
+        let data = {name: "stam", email: "trenf@yandex.ru", psw: "1234"};
+        let formData = new FormData();
 
-        this.getData().then(res => (res));
+        for (let field in data) {
+            formData.append(field, data[field])
+        }
 
-        //console.log(data);
-
-        //return this.getData().then(res => res);
-
-        //let r = data.then(res => res);
-        //console.log(data);
-        
-        //return r;
+        const request = await Request.sendRequest(`data.php`, {method: "POST", body: formData});
+        try {
+            const result = JSON.parse(request);
+            console.log('res', result);
+        } catch (e) {
+            console.log('res', !!request);
+        }
     }
+
 }
 
-new Request().getAllData().then();
+//new Request().getAllData().then();
+//new Request().addOneItem().then();
 new Request().getOneItem(12).then();
-new Request().deleteOneItem(12).then();
+//new Request().deleteOneItem(12).then();
 
 
 

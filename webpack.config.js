@@ -34,11 +34,8 @@ module.exports = {
             warnings: true,
             errors: true
         },
+        historyApiFallback: true,
         disableHostCheck: true,
-        proxy: {
-            //"/data.php": "http://dev1.test/src/js/data.php"
-        },
-        //host: "dev1.test",
         //public: 'dev1.test',
         compress: true, // Enable gzip compression for everything served
         //open: true, // Открывает сайт в браузере автоматически, это же работает как --open в блоке scripts для package.json
@@ -54,7 +51,10 @@ module.exports = {
     // Unexpected token: keyword «const»
     optimization: {
         minimizer: [
+
+            // ENABLE FOR BABEL
             new UglifyJsPlugin(),
+
             new OptimizeCssAssetsPlugin({
                 //cssProcessor: require('cssnano'), - эту задачу выполняет css-nano из лоадера ниже, этот блок
                 // только для того, чтобы удалять комменты, которые nano не удаляет/пропускает
@@ -157,8 +157,8 @@ module.exports = {
             * Включи его для корректной работы UglifyJS
             * */
             {
-                test: /\.js$/, exclude: /node_modules/,
-                loader: "babel-loader"
+                // test: /\.js$/, exclude: /node_modules/,
+                // loader: "babel-loader"
             },
 
             /*
