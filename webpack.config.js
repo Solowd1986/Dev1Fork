@@ -157,8 +157,8 @@ module.exports = {
             * Включи его для корректной работы UglifyJS
             * */
             {
-                // test: /\.js$/, exclude: /node_modules/,
-                // loader: "babel-loader"
+                 test: /\.js$/, exclude: /node_modules/,
+                 loader: "babel-loader"
             },
 
             /*

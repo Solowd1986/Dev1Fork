@@ -111,14 +111,31 @@ const dataAll = {
 
 };
 
+const userToken = {
+  uid: 3456,
+  role: "user"
+};
+
+
+
 
 
 class Request {
     static sendRequest(url, options) {
+
+        // Выносим сюда авторизацию, то есть каждый запрос отправит такой заголовок. Добавляем обьекту options обьект headers, на случай, если
+        // запрос заголовков вообще не передал. Это чтоб пустому обьекту не присвоить заголовок.
         if (!('headers' in options)) {
           options.headers = {};
         }
         options.headers.authUser = "dsferewqrwer";
+
+
+
+        let controller = new AbortController();
+        setTimeout(() => controller.abort(), 4000);
+        options.signal = controller.signal;
+
         return fetch(url, options).then(response => {
             if (!response.ok) {
                 return response.text().then(error => {
@@ -130,6 +147,8 @@ class Request {
                 return response.text();
             }
         });
+        
+        
     }
 
     static rootElementGenerator(rootSelector, appendData) {
@@ -160,13 +179,23 @@ class Request {
     }
 
     async getAllData() {
-        const request = await Request.sendRequest(`data.php`, {method: "GET"});
         try {
+            const request = await Request.sendRequest(`data.php`, {method: "GET"});
             const result = JSON.parse(request);
-            Request.rootElementGenerator(".result", result);
+            Request.rootElementGenerator(".result", [result]);
+
         } catch (e) {
-            console.log('res', !!request);
+            console.log(e.message);
         }
+
+
+        // try {
+        //     const result = JSON.parse(request);
+        //     Request.rootElementGenerator(".result", [result]);
+        // } catch (e) {
+        //     console.log("Error:",e.message, "in getAllData");
+        //     console.log('res', request ? request : !!request);
+        // }
     }
 
 
@@ -199,27 +228,78 @@ class Request {
 
 
     async addOneItem() {
-        let data = {name: "stam", email: "trenf@yandex.ru", psw: "1234"};
-        let formData = new FormData();
+        const data = {name: "stam", email: "trenf@yandex.ru", psw: "1234"};
 
-        for (let field in data) {
+        const data2 = [
+            {
+                title: "Nokia",
+                price: 4000,
+                quantity: 1,
+                color: "black"
+            },
+            {
+                title: "Motorola",
+                price: 14000,
+                quantity: 3,
+                color: "red"
+            },
+            {
+                title: "LG",
+                price: 12000,
+                quantity: 4,
+                color: "blue"
+            },
+        ];
+
+        const data3 = {
+            data: {
+                title: "Nokia",
+                price: 4000,
+                quantity: 1,
+                color: "black"
+            }
+        };
+
+
+        const formData = new FormData();
+
+        for (const field in data) {
             formData.append(field, data[field])
         }
 
-        const request = await Request.sendRequest(`data.php`, {method: "POST", body: formData});
+
+        let datasend = new URLSearchParams(JSON.stringify(data2)).toString();
+        let datasend2 = JSON.stringify(data3);
+
+
+        console.log(datasend);
+        console.log(datasend2);
+
+
         try {
-            const result = JSON.parse(request);
-            console.log('res', result);
+            const request = await Request.sendRequest(`data.php`, {method: "POST", body: datasend,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
+
+            let t = document.querySelector(".result");
+            t.innerHTML = request;
+
+            //const result = JSON.parse(request);
+            //Request.rootElementGenerator(".result", [result]);
         } catch (e) {
-            console.log('res', !!request);
+            console.log(e.message);
         }
     }
 
 }
 
-//new Request().getAllData().then();
-//new Request().addOneItem().then();
-new Request().getOneItem(12).then();
+const responce = new Request();
+//responce.getAllData().then();
+
+new Request().addOneItem().then();
+//new Request().getOneItem(12).then();
 //new Request().deleteOneItem(12).then();
 
 

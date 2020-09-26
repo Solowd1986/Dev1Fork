@@ -7,6 +7,8 @@
 //]);
 
 
+
+
 class Db
 {
     private static $host = "127.0.0.1";
@@ -35,18 +37,71 @@ class Db
 }
 
 
+/*
+function var_dump_pre($mixed = null) {
+    echo '<pre>';
+    print_r($mixed);
+    echo '</pre>';
+    return null;
+}
+
+
+$solt = "dsf943nmdjf89345fdtger";
+const PSW_SEPARATOR = "|";
+
+$user = [
+    "uid" => 34467,
+    "role" => "user",
+    "expire" => time() + 3600
+];
+
+function sign($data, $solt) {
+    return hash("sha256", serialize($data) . $solt);
+}
+
+$token_sign = sign($user, $solt);
+
+
+function packedData($data, $solt) {
+    return base64_encode(json_encode($data)) . PSW_SEPARATOR . sign($data, $solt);
+}
+
+$res = packedData($user, $solt);
+echo "<p style='margin: 30px auto;text-align: center; font-size: 20px;'>packedData - " . $res . "</p>";
 
 
 
+function verifyUserData($data, $sign) {
+    if (explode("|", $data)[1] === $sign) {
+        $userData = json_decode(base64_decode(explode("|", $data)[0]), true);
+        var_dump_pre($userData);
+    }
+}
+
+verifyUserData($res, $token_sign);
+
+echo "<p style='text-align: center; padding: 10px'>
+        <a style='padding: 10px; font-size: 20px; background-color: red; color: white; border-radius: 5px;' href='/dist'>Back</a>
+      </p>";
+
+*/
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    var_dump($_REQUEST);
+    if (empty($_POST)) {
+        print "empty arr\n";
+    }
+
     print json_encode($_POST);
+
+
+    //var_dump($_POST);
+    //print json_encode($_POST);
     //print false;
-
-
 }
+
 
 $host = '127.0.0.1';
 $db   = 'site';
@@ -64,6 +119,8 @@ $opt = [
 $pdo = new PDO($dsn, $user, $pass, $opt);
 
 
+//sleep(4);
+
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
     $res = $pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
@@ -73,15 +130,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         //print $_GET['id'];
          //print json_encode($res);
          //print json_encode($_SERVER['HTTP_AUTH2']);
-         print json_encode(apache_request_headers());
-
-
-
+         print json_encode(array_merge(["responce" => true] ,apache_request_headers()));
     } else {
         //$res["res"] = 12;
         //array_push($res, ["success" => true]);
+        print json_encode(array_merge(["responce" => true] ,apache_request_headers()));
 
-        print json_encode($res);
         //print false;
 
         //var_dump($res);
