@@ -272,22 +272,63 @@ class Request {
         let datasend2 = JSON.stringify(data3);
 
 
-        console.log(datasend);
-        console.log(datasend2);
+        //console.log(datasend);
+        //console.log(datasend2);
+
+        const dataSet = {
+            name: "bob",
+            age: 21,
+            floor: 4
+        };
+        
+        //const newObj = Object.assign({}, dataSet);
+        const picked = (({ age, floor }) => ({ age, floor }))(dataSet);
+
+        console.log(picked);
+        
+        
+
+
+
+        function addTokenToLocalStorage(token) {
+            if (!localStorage.getItem(token.tokenTitle)) {
+                localStorage.setItem(token.tokenTitle, JSON.stringify((({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(token)));
+            } else {
+                const tokenData = (({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(token);
+
+                // console.log('get');
+                // console.log(tokenData.tokenExpire);
+                // console.log(new Date().getTime());
+                // console.log(Date.now());
+
+                if (tokenData.tokenExpire < Date.now()) {
+                    console.log(tokenData.tokenExpire);
+                    console.log(new Date().getTime());
+                    console.log(Date.now());
+                    console.log('token expire');
+                }
+                //console.log(tokenData);
+            }
+        }
+
+
 
 
         try {
-            const request = await Request.sendRequest(`data.php`, {method: "POST", body: datasend,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                }
+            const request = await Request.sendRequest(`data.php`, {method: "POST", body: formData,
+                // headers: {
+                //     'Content-Type': 'application/x-www-form-urlencoded',
+                // }
             });
 
-            let t = document.querySelector(".result");
-            t.innerHTML = request;
+            //let t = document.querySelector(".result");
+            //t.innerHTML = request;
+            const result = JSON.parse(request);
+            Request.rootElementGenerator(".result", [result]);
+            
+            addTokenToLocalStorage(result);
 
-            //const result = JSON.parse(request);
-            //Request.rootElementGenerator(".result", [result]);
+            //localStorage.setItem('token', JSON.stringify((({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(result)));
         } catch (e) {
             console.log(e.message);
         }
