@@ -120,7 +120,16 @@ const userToken = {
 
 
 
+
+
+
+
+
+
+
+
 class Request {
+
     static sendRequest(url, options) {
 
         // Выносим сюда авторизацию, то есть каждый запрос отправит такой заголовок. Добавляем обьекту options обьект headers, на случай, если
@@ -147,8 +156,6 @@ class Request {
                 return response.text();
             }
         });
-        
-        
     }
 
     static rootElementGenerator(rootSelector, appendData) {
@@ -313,7 +320,6 @@ class Request {
 
 
 
-
         try {
             const request = await Request.sendRequest(`data.php`, {method: "POST", body: formData,
                 // headers: {
@@ -323,18 +329,44 @@ class Request {
 
             //let t = document.querySelector(".result");
             //t.innerHTML = request;
-            const result = JSON.parse(request);
-            Request.rootElementGenerator(".result", [result]);
-            
-            addTokenToLocalStorage(result);
+
+            //const result = JSON.parse(request);
+            //Request.rootElementGenerator(".result", [result]);
+
+            const form = document.querySelector(".form");
+
+            form.addEventListener("submit", function (evt) {
+                evt.preventDefault();
+                //console.dir(this);
+
+                let formDataSet = new FormData(form);
+                let options = {method: "POST", body: formDataSet, headers: {
+                        'Data-Type': 'user-form',
+                    }};
+                Request.sendRequest("/dist/data.php", options).then(
+                    res => {
+                        let t = document.querySelector(".result");
+                        t.innerHTML += res;
+                        //console.log(res);
+                    });
+
+
+            });
+
+
+
+
+            //addTokenToLocalStorage(result);
+
 
             //localStorage.setItem('token', JSON.stringify((({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(result)));
         } catch (e) {
             console.log(e.message);
         }
     }
-
 }
+
+
 
 const responce = new Request();
 //responce.getAllData().then();
@@ -342,6 +374,10 @@ const responce = new Request();
 new Request().addOneItem().then();
 //new Request().getOneItem(12).then();
 //new Request().deleteOneItem(12).then();
+
+
+
+
 
 
 

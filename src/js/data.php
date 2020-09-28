@@ -34,6 +34,14 @@ class Db
         }
         return self::$pdo;
     }
+
+
+    public static function delete($id, $table) {
+        $pdo = DB::connectDb()->prepare("DELETE FROM $table WHERE id={$id}");
+        $pdo->execute();
+        return $pdo->rowCount();
+    }
+
 }
 
 
@@ -137,24 +145,35 @@ const PSW_SEPARATOR = "|";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+
+    function var_dump_pre($mixed = null)
+    {
+        echo '<pre>';
+        print_r($mixed);
+        echo '</pre>';
+        return null;
+    }
+
+
     //var_dump($_REQUEST);
     if (empty($_POST)) {
         print "empty arr\n";
     }
 
-    if (isset($_POST["auth-submit"])) {
-
-        function var_dump_pre($mixed = null) {
-            echo '<pre>';
-            print_r($mixed);
-            echo '</pre>';
-            return null;
-        }
-
-
+    if (isset(getallheaders()["Data-Type"])) {
         var_dump_pre($_POST);
 
 
+
+    }
+
+    if (isset($_POST["auth-submit"])) {
+
+        print 12;
+
+
+
+        var_dump_pre($_POST);
 
         $solt = "dsf943nmdjf89345fdtger";
 
@@ -164,14 +183,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "expire" => time() + 3600
         ];
 
-        function sign($data, $solt) {
+        function sign($data, $solt)
+        {
             return hash("sha256", serialize($data) . $solt);
         }
 
         $token_sign = sign($user, $solt);
 
 
-        function packedData($data, $solt) {
+        function packedData($data, $solt)
+        {
             return base64_encode(json_encode($data)) . PSW_SEPARATOR . sign($data, $solt);
         }
 
@@ -179,8 +200,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //echo "<p style='margin: 30px auto;text-align: center; font-size: 20px;'>packedData - " . $res . "</p>";
 
 
-
-        function verifyUserData($data, $sign) {
+        function verifyUserData($data, $sign)
+        {
             if (explode("|", $data)[1] === $sign) {
                 $userData = json_decode(base64_decode(explode("|", $data)[0]), true);
                 var_dump_pre($userData);
@@ -189,20 +210,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //verifyUserData($res, $token_sign);
 
-        echo "<p style='text-align: center; padding: 10px'>
-        <a style='padding: 10px; font-size: 20px; background-color: red; color: white; border-radius: 5px;' href='/dist'>Back</a>
-      </p>";
+        if (isset($_POST["login"]) && isset($_POST["psw"])) {
+            if ($_POST["login"] === "bob") {
+                //print hash("sha256", "data");
+            }
+        }
 
-    } else {
-        //print json_encode($_POST);
-        print json_encode(
-            array_merge(
-                [
-                    "responce" => true,
-                    "tokenTitle" => "token",
-                    "tokenId" => "df54tergfery456",
-                    "tokenExpire" => (time() * 1000) + 3600], $_POST));
+
+//        echo "<p style='text-align: center; padding: 10px'>
+//        <a style='padding: 10px; font-size: 20px; background-color: red; color: white; border-radius: 5px;' href='/dist'>Back</a>
+//      </p>";
     }
+
+//    } else {
+//        //print json_encode($_POST);
+//        //print 1222;
+//        print json_encode(
+//            array_merge(
+//                [
+//                    "responce" => true,
+//                    "tokenTitle" => "token",
+//                    "tokenId" => "df54tergfery456",
+//                    "tokenExpire" => (time() * 1000) + 3600], $_POST));
+//
+//
+//    }
 
     //var_dump($_POST);
     //print json_encode($_POST);
