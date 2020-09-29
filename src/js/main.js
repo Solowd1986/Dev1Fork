@@ -155,7 +155,7 @@ let st = {
 
 let str = "";
 let arr = Object.keys(st);
-console.log(arr);
+
 
 
 Object.keys(st).forEach((item, key, array) => {
@@ -179,8 +179,6 @@ for (const item of arr) {
     // }
 }
 
-document.cookie = str;
-console.log(str);
 
 
 
@@ -192,128 +190,59 @@ class DateHelper {
 }
 
 
+const df = {days: 12, hours: 2, minutes: 30, seconds: 30};
+
+function dateOffsetHelper(offset) {
+
+    let dateInitial = Date.now();
+
+    if ("days" in offset) {
+        dateInitial += parseInt(offset.days) * 24 * 60 * 60 * 1000;
+    }
+    if ("hours" in offset) {
+        dateInitial += parseInt(offset.hours) * 60 * 60 * 1000;
+    }
+    if ("minutes" in offset) {
+        dateInitial += parseInt(offset.minutes) * 60 * 1000;
+    }
+    if ("seconds" in offset) {
+        dateInitial += parseInt(offset.seconds) * 1000;
+    }
+    return new Date(dateInitial);
+}
+
+
+
+
 class CookieHelper {
 
     static hasCookie(cookieName) {
         return document.cookie.split(";").map(item => item.trim().match(/(?<name>.*?)=/).groups.name).includes(cookieName);
     }
 
+    static cookieDateExpireHelper(milliseconds, toUTCString = false) {
+        return !toUTCString
+            ? new Date(milliseconds)
+            : (new Date(milliseconds + Math.abs(new Date().getTimezoneOffset() * 60 * 1000))).toUTCString();
+    }
+
+
+
     static getCookie(name) {
         if (CookieHelper.hasCookie(name)) {
             const cookieMatch = document.cookie.split(";").find(item => decodeURIComponent(item.trim().match(/(?<name>.*?)=/).groups.name) === name).split("=");
             try {
                 const cookieParsedValue = JSON.parse(decodeURIComponent(cookieMatch[1]));
-                return {name: cookieMatch[0], value: cookieParsedValue};
+                return {name: decodeURIComponent(cookieMatch[0]), value: cookieParsedValue};
             } catch (e) {
-                return {name: cookieMatch[0], value: cookieMatch[1]};
+                return {name: decodeURIComponent(cookieMatch[0]), value: decodeURIComponent(cookieMatch[1])};
             }
         } else {
             return false;
         }
     }
 
-    static cookieDateHelper() {
-
-    }
-
-
-    static toUTCStringHelper(offset = null) {
-
-
-        const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + 3);
-        console.log(currentDate);
-
-
-        
-        //console.log('cr', (new Date(Date.now() + 10800000 + 10800000)).toUTCString());
-        console.log(Date.now());
-
-        const df = {days: 12, hours: 2, minutes: 30, seconds: 30};
-
-        let dateSelf = Date.now();
-        if ("days" in df) {
-            dateSelf += parseInt(df.days) * 24 * 60 * 60 * 1000;
-        }
-        if ("hours" in df) {
-            dateSelf += parseInt(df.hours) * 60 * 60 * 1000;
-        }
-        if ("minutes" in df) {
-            dateSelf += parseInt(df.minutes) * 60 * 1000;
-        }
-        if ("seconds" in df) {
-            dateSelf += parseInt(df.seconds) * 1000;
-        }
-
-
-        let offsetTT = Math.abs((new Date().getTimezoneOffset())) * 60 * 1000;
-
-        console.log('generate', (new Date(dateSelf + offsetTT)).toUTCString());
-        
-
-        
-        switch (df) {
-            case ("days" in df) :
-                console.log('yes');
-                break;
-            case ("hours" in df) :
-                console.log('yes2');
-                break;
-            default:
-                console.log('no');
-        }
-
-
-
-        //let tm = new Date(token.expire + 86400e3);
-        let dd = new Date();
-        console.log('timezone offset', dd.getTimezoneOffset());
-        let timezoneoffsetMilliseconds = Math.abs(dd.getTimezoneOffset()) * 60 * 1000;
-        let offsetUser = 10800000;
-        let currentdate = Date.now() + timezoneoffsetMilliseconds + offsetUser;
-        console.log('resulttt', (new Date(currentdate)).toUTCString());
-
-
-        
-
-
-
-        let dd2 = Date.now();
-
-
-        let res = dd2 + (Math.abs(dd.getTimezoneOffset()) * 60 * 1000);
-        console.log('offset millisec', Math.abs(dd.getTimezoneOffset()) * 60 * 1000);
-
-        console.log('date', dd);
-        //console.log(res);
-        //
-        //
-        //console.log((new Date(dd)).toUTCString());
-        console.log((new Date(Date.now())).toUTCString());
-        console.log((new Date(res)).toUTCString());
-
-        //console.log('tk exp', new Date(token.expire));
-        console.log(Date.now());
-
-
-    }
-
     static setCookie(name, value, options = {}) {
-        console.log(document.cookie);
-
-        //let ty = document.cookie.split(";");
-        
-
-
-        const cookies = [];
-        //document.cookie.split(";").forEach(item => cookies.push(item.trim().match(/(?<exp>.*?)=/).groups.exp));
-        //cookies.includes("blob") ? console.log(1) : console.log(2);
-
-        //console.log(document.cookie.split(";").map(item => item.trim().match(/(?<exp>.*?)=/).groups.exp).includes("blob"));
-
-
-        // geywith map
-        
         let opt = "";
         if (Object.keys(options).length !== 0) {
             Object.keys(options).forEach((item, key, array) => {
@@ -321,20 +250,25 @@ class CookieHelper {
             });
         }
         console.log(opt);
-        
         document.cookie = `${encodeURIComponent(name)}= ${encodeURIComponent(JSON.stringify(value))};` + opt;
     }
 }
 
 
+//console.log('now', CookieHelper.cookieDateExpireHelper(Date.now() + 10800000, true));
+
+
+
 const currentDate = new Date();
 currentDate.setHours(currentDate.getHours() + 3);
 
-CookieHelper.setCookie("blob", {name:"bb"}, {"path" : "/", expires: (currentDate)});
+CookieHelper.setCookie("blob", {name:"bb"}, {"path" : "/", "max-age": 3600});
+document.cookie = "name=gt;max-age=3600;path=/";
 let r = CookieHelper.getCookie("blob");
-console.log('find', r);
+//console.log('find', r);
 
-CookieHelper.toUTCStringHelper();
+//CookieHelper.toUTCStringHelper();
+
 
 
 
@@ -343,20 +277,6 @@ CookieHelper.toUTCStringHelper();
 class UserAuth {
     static decodeSignedData(str) {
         return JSON.parse(window.atob(str.substr(0, str.indexOf("|"))));
-    }
-
-    static isJson(item) {
-        item = typeof item !== "string"
-            ? JSON.stringify(item)
-            : item;
-
-        try {
-            item = JSON.parse(item);
-        } catch (e) {
-            return false;
-        }
-
-        return (typeof item === "object" && item !== null);
     }
 
     static formHandler(form) {
@@ -371,49 +291,6 @@ class UserAuth {
                 try {
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
                     const token = UserAuth.decodeSignedData(responce);
-
-                    console.log(token["max-age"]);
-                    
-                    
-                    let tm = new Date(token.expire + 86400e3);
-                    let dd = new Date();
-                    let dd2 = Date.now();
-
-                    console.log('timezone offset', dd.getTimezoneOffset());
-
-                    let res = dd2 + (Math.abs(dd.getTimezoneOffset()) * 60 * 1000);
-                    console.log('offset millisec', Math.abs(dd.getTimezoneOffset()) * 60 * 1000);
-
-                     console.log('date', dd);
-                     //console.log(res);
-                    //
-                    //
-                    //console.log((new Date(dd)).toUTCString());
-                    console.log((new Date(Date.now())).toUTCString());
-                    console.log((new Date(res)).toUTCString());
-
-                    console.log('tk exp', new Date(token.expire));
-                    console.log(Date.now());
-
-
-
-                    let options2 = {
-                        weekday: 'long',
-                        hour: 'numeric', minute: 'numeric', second: 'numeric',
-                        //timeZone: 'Australia/Sydney',
-                        //timeZoneName: 'short'
-                    };
-
-                    //let dateRus = new Intl.DateTimeFormat('ru-RU', options2);
-                    //console.log(dateRus.format(tm));
-
-
-                    //console.log(dateRus.toUTCString());
-                    
-                    
-                    //console.log(tm.toUTCString());
-
-                    //document.cookie = `tokenId=${token.tokenId}; path=/; expires=${(new Date(token.expire)).toUTCString()}`;
                     document.cookie = `tokenId=${token.tokenId}; path=/; max-age=${token["max-age"]}`;
                 } catch (e) {
                     console.log("error when request to form:" ,e);
@@ -424,7 +301,7 @@ class UserAuth {
 }
 
 
-UserAuth.formHandler(document.querySelector(".form"));
+//UserAuth.formHandler(document.querySelector(".form"));
 
 
 
@@ -727,7 +604,7 @@ class Request {
 const responce = new Request();
 //responce.getAllData().then();
 
-new Request().addOneItem().then();
+//new Request().addOneItem().then();
 //new Request().getOneItem(12).then();
 //new Request().deleteOneItem(12).then();
 
