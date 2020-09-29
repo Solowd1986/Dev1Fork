@@ -89,6 +89,7 @@ module.exports = {
 
 
 
+
         // new HandlebarsPlugin({
         //     // path to hbs entry file(s). Also supports nested directories if write path.join(process.cwd(), "app", "src", "**", "*.hbs"),
         //     entry: path.resolve(__dirname, "src/tpl/{index,page,404}.hbs"),
