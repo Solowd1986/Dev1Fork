@@ -214,6 +214,8 @@ function dateOffsetHelper(offset) {
 
 
 
+
+
 class CookieHelper {
 
     static hasCookie(cookieName) {
@@ -259,7 +261,7 @@ class CookieHelper {
 
 
 //console.log('now', CookieHelper.cookieDateExpireHelper(Date.now() + 10800000, true));
-
+//console.log(CookieHelper.hasCookie("ss"));
 
 
 const au = document.querySelector(".user-auth");
@@ -276,7 +278,9 @@ function render() {
         button.innerText = "Exit";
         button.style.cssText = "background-color: red; color: white; padding: 2px 10px; align-self: center";
 
-        button.addEventListener("click", userExit);
+        button.addEventListener("click", () => {
+            userExit(data.name).then()
+        });
 
         au.append(p);
         au.append(button);
@@ -288,16 +292,13 @@ function render() {
 
 
 
-async function userExit() {
+async function userExit(name) {
     const responce = await Request.sendRequest("/dist/data.php", {
         method: "GET",
         headers: {
             "User-Exit": "auth"
         }
     });
-
-
-
 }
 
 
