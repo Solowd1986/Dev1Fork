@@ -1,3 +1,5 @@
-export default {name: "bob"};
-export let cnt = 12;
+export default [
+    {"name": "bob"}
+    ];
+//export let cnt = 12;
 

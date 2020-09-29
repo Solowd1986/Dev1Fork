@@ -20,6 +20,7 @@ const imageminMozjpeg = require('imagemin-mozjpeg');
 const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
 
+const HandlebarsPlugin = require("handlebars-webpack-plugin");
 
 module.exports = {
     entry: path.resolve(__dirname, "src/js/main.js"),
@@ -66,9 +67,16 @@ module.exports = {
         ],
     },
     plugins: [
-        // HtmlWebPackPlugin - основной плагин для генерации html через webpack
+
+        //HtmlWebPackPlugin - основной плагин для генерации html через webpack
+
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'src/tpl/index.hbs') // Плагин, для обработки файлов с расширением hbs
+            template: path.resolve(__dirname, 'src/tpl/index.hbs'), // Плагин, для обработки файлов с расширением hbs
+            templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
+            //filename: path.resolve(__dirname, 'dist/index.html'), // Плагин, для обработки файлов с расширением hbs
+            //inject: true
+            //filename: 'index.html',
+            //template: 'dist/index.html'
         }),
         new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
             filename: 'page.html',
@@ -78,6 +86,46 @@ module.exports = {
             filename: '404.html',
             template: path.resolve(__dirname, 'src/tpl/404.hbs')
         }),
+
+
+
+        // new HandlebarsPlugin({
+        //     // path to hbs entry file(s). Also supports nested directories if write path.join(process.cwd(), "app", "src", "**", "*.hbs"),
+        //     entry: path.resolve(__dirname, "src/tpl/{index,page,404}.hbs"),
+        //
+        //     // output path and filename(s). This should lie within the webpacks output-folder
+        //     // if ommited, the input filepath stripped of its extension will be used
+        //     //output: path.join(process.cwd(), "build", "[name].html"),
+        //
+        //     output: path.resolve(__dirname, "dist", "[name].html"),
+        //
+        //     // you can als add a [path] variable, which will emit the files with their relative path, like
+        //     // output: path.join(process.cwd(), "build", [path], "[name].html"),
+        //
+        //     // data passed to main hbs template: `main-template(data)`
+        //     //data: require("./app/data/data.json"),
+        //
+        //     //data: require(path.resolve(__dirname, "src/js/data.json")),
+        //
+        //     data: require("./src/js/data.json"),
+        //
+        //     // or add it as filepath to rebuild data on change using webpack-dev-server
+        //     //data: path.resolve(__dirname, "src/js/data.json"),
+        //
+        //     // globbed path to partials, where folder/filename is unique
+        //     partials: [
+        //         //path.join(process.cwd(), "app", "src", "components", "*", "*.hbs")
+        //         path.resolve(__dirname, "src/tpl/common/header.hbs"),
+        //         path.resolve(__dirname, "src/tpl/common/footer.hbs"),
+        //         path.resolve(__dirname, "src/tpl/common/modals.hbs"),
+        //         path.resolve(__dirname, "src/tpl/common/sprite.hbs"),
+        //     ],
+        // }),
+
+
+
+
+
 
         // MiniCssExtractPlugin - создает отдельный файл css для того, что импортировано в основной js-файл. Заменяет
         // style-loader, который включает стили инлайн в блок style, что как правило не нужно
@@ -109,9 +157,13 @@ module.exports = {
     ],
     module: {
         rules: [
+
+            // Данный лоадер отрбатывает в связке с HtmlWebpackPlugin, который вызывает его увидев расширение hbs.
+            // Важно: данные в шаблон передаются там же, в HtmlWebpackPlugin, через параметр templateParameters
+            // Например: templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
             {
                 test: /\.(hbs|handlebars)$/,
-                loader: "handlebars-loader"
+                loader: "handlebars-loader",
             },
 
             // При обработке css/scss верхним (то есть последним) выполняется MiniCssExtractPlugin, он создает css файл и

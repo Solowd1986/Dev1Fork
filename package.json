@@ -38,6 +38,7 @@
     "file-loader": "^6.0.0",
     "handlebars": "^4.7.6",
     "handlebars-loader": "^1.7.1",
+    "handlebars-webpack-plugin": "^2.1.1",
     "html-webpack-plugin": "^4.3.0",
     "image-webpack-loader": "^6.0.0",
     "imagemin-gifsicle": "^7.0.0",

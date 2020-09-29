@@ -4,6 +4,13 @@
 <div class="container flex-grow-bottom" data-name-ban = "12">
     <main class="wrapper flex-grow-bottom content">
 
+
+        {{#each phones}}
+            <p>{{@key}} : price = {{this.price}}</p>
+        {{/each}}
+
+
+
         <div class="error" style="text-align: center; ">
 
         </div>
