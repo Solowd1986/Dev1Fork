@@ -217,7 +217,11 @@ function dateOffsetHelper(offset) {
 class CookieHelper {
 
     static hasCookie(cookieName) {
-        return document.cookie.split(";").map(item => item.trim().match(/(?<name>.*?)=/).groups.name).includes(cookieName);
+        if (document.cookie.length > 0) {
+            return document.cookie.split(";").map(item => item.trim().match(/(?<name>.*?)=/).groups.name).includes(cookieName);
+        } else {
+            return  false;
+        }
     }
 
     static cookieDateExpireHelper(milliseconds, toUTCString = false) {
@@ -225,7 +229,6 @@ class CookieHelper {
             ? new Date(milliseconds)
             : (new Date(milliseconds + Math.abs(new Date().getTimezoneOffset() * 60 * 1000))).toUTCString();
     }
-
 
 
     static getCookie(name) {
@@ -249,7 +252,7 @@ class CookieHelper {
                 opt += (array.indexOf(item) + 1 !== array.length) ? item + "=" + options[item] + "; " : item + "=" + options[item] + "";
             });
         }
-        console.log(opt);
+        //console.log(opt);
         document.cookie = `${encodeURIComponent(name)}= ${encodeURIComponent(JSON.stringify(value))};` + opt;
     }
 }
@@ -259,17 +262,43 @@ class CookieHelper {
 
 
 
-const currentDate = new Date();
-currentDate.setHours(currentDate.getHours() + 3);
-
-CookieHelper.setCookie("blob", {name:"bb"}, {"path" : "/", "max-age": 3600});
-document.cookie = "name=gt;max-age=3600;path=/";
-let r = CookieHelper.getCookie("blob");
-//console.log('find', r);
-
-//CookieHelper.toUTCStringHelper();
+const au = document.querySelector(".user-auth");
 
 
+function render() {
+    if (CookieHelper.hasCookie("auth")) {
+        const data = CookieHelper.getCookie("auth");
+        console.log(data);
+        const p = document.createElement("p");
+        p.innerText = `Hello ${data.value.name}`;
+        p.style.cssText = "margin-right: 10px";
+        const button = document.createElement("button");
+        button.innerText = "Exit";
+        button.style.cssText = "background-color: red; color: white; padding: 2px 10px; align-self: center";
+
+        button.addEventListener("click", userExit);
+
+        au.append(p);
+        au.append(button);
+
+
+    }
+}
+
+
+
+
+async function userExit() {
+    const responce = await Request.sendRequest("/dist/data.php", {
+        method: "GET",
+        headers: {
+            "User-Exit": "auth"
+        }
+    });
+
+
+
+}
 
 
 
@@ -291,7 +320,8 @@ class UserAuth {
                 try {
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
                     const token = UserAuth.decodeSignedData(responce);
-                    document.cookie = `tokenId=${token.tokenId}; path=/; max-age=${token["max-age"]}`;
+                    CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
+                    render();
                 } catch (e) {
                     console.log("error when request to form:" ,e);
                 }
@@ -301,7 +331,7 @@ class UserAuth {
 }
 
 
-//UserAuth.formHandler(document.querySelector(".form"));
+UserAuth.formHandler(document.querySelector(".form"));
 
 
 

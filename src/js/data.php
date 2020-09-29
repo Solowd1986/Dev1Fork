@@ -164,10 +164,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $tokenData = [
             "tokenName" => "auth",
             "uid" => 34467,
+            "path" => "/",
             "tokenId" => "sdf657gfhytutyutyu",
             "name" => "Bob",
             "role" => "user",
-            "expire" => (time() + 3600) * 1000,
+            "expires" => (time() + 3600) * 1000,
             "max-age" => 3600
         ];
         print UserToken::packedData($tokenData);
@@ -275,6 +276,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 //    }
 
     $res = $pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
+
+    if (isset(getallheaders()["User-Exit"])) {
+        $name = getallheaders()["User-Exit"];
+        setcookie($name, "", time() - 3600, "/");
+    }
 
 
     if (array_key_exists('id', $_GET)) {
