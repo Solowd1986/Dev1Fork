@@ -75,16 +75,9 @@ class UserToken {
     }
 
     public static  function verifyUserData($data, $sign) {
-//        if (explode("|", $data)[1] === $sign) {
-//            return json_decode(base64_decode(explode("|", $data)[0]), true);
-//        } else {
-//            return false;
-//        }
         return (explode("|", $data)[1] === $sign) ? json_decode(base64_decode(explode("|", $data)[0]), true) : false;
     }
 }
-
-
 
 
 
@@ -160,12 +153,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         print "empty arr\n";
     }
 
-    if (isset(getallheaders()["Data-Type"])) {
-        var_dump_pre($_POST);
-
-
-
+    function jsonEncodeData($data, $add = []) {
+        return json_encode(array_merge($data, $add));
     }
+
+    if (isset(getallheaders()["Data-Type"])) {
+
+        //var_dump_pre($_POST);
+        //print jsonEncodeData(["name" => "gill"], $_POST);
+        $tokenData = [
+            "tokenName" => "auth",
+            "uid" => 34467,
+            "tokenId" => "sdf657gfhytutyutyu",
+            "name" => "Bob",
+            "role" => "user",
+            "expire" => (time() + 3600) * 1000,
+            "max-age" => 3600
+        ];
+        print UserToken::packedData($tokenData);
+    }
+
 
     if (isset($_POST["auth-submit"])) {
 
@@ -173,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-        var_dump_pre($_POST);
+        //var_dump_pre($_POST);
 
         $solt = "dsf943nmdjf89345fdtger";
 
@@ -261,6 +268,11 @@ $pdo = new PDO($dsn, $user, $pass, $opt);
 //sleep(4);
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
+
+//    if(isset($_COOKIE["auth"])) {
+//        setcookie('auth', "", time()-3600, '/');
+//        unset($_COOKIE['auth']);
+//    }
 
     $res = $pdo->query("SELECT * FROM users")->fetchAll(\PDO::FETCH_ASSOC);
 
