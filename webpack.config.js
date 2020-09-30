@@ -90,6 +90,9 @@ module.exports = {
 
 
 
+        // На этапе использования данного плагина он работал только так:
+        // 1. Сначала комментишь HtmlWebpackPlugin, чтоб он не запускался, потом вызываешь HandlebarsPlugin, он создает файлы, комментишь плагин
+        // 2. Потом расккоментишь HtmlWebpackPlugin, комментишь HandlebarsPlugin, вызываешь HtmlWebpackPlugin и он вставляет внешние ресурсы. Криво, но вот так.
         // new HandlebarsPlugin({
         //     // path to hbs entry file(s). Also supports nested directories if write path.join(process.cwd(), "app", "src", "**", "*.hbs"),
         //     entry: path.resolve(__dirname, "src/tpl/{index,page,404}.hbs"),
