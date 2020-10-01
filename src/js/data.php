@@ -99,8 +99,7 @@ $data2 = [
 
 
 
-DataSanitizeHelper::run($data2);
-
+//DataSanitizeHelper::run($data2);
 
 
 
@@ -114,9 +113,14 @@ class UserAuth
     private static $checkingUniqueField = "email";
     private static $passwordFieldTitle = "psw";
 
+    private static $checkingUserAuthFieldsList = ["email", "psw"];
+    private static $checkingAuthTable = "users";
+    private static $checkingAuthField = "email";
+    private static $checkingPswField = "psw";
+
     public static function userRegistration($data)
     {
-        if (self::checkRegistrationFields($data)) {
+        if (self::checkRegistrationFields(self::$checkingUserFieldsList, $data)) {
             // формируем массив для вставки только из заданных в $checkingUserFieldsList полей, первым общий массив,
             // элементы с общими ключами уйдут в результат имеено поэтому array_flip - чтобы значения стали ключами
             // и сравнение прошло корректно.
@@ -134,6 +138,33 @@ class UserAuth
         }
     }
 
+    public static function userAuthorize($data)
+    {
+        if (self::checkRegistrationFields(self::$checkingUserAuthFieldsList, $data)) {
+            $fields = array_intersect_key($data, array_flip(self::$checkingUserAuthFieldsList));
+            if (DbQuery::checkRecord(self::$checkingTable, [self::$checkingAuthField => $fields[self::$checkingAuthField]])) {
+
+
+                //$fields[self::$passwordFieldTitle] = PasswordHelper::generatePsw($fields[self::$passwordFieldTitle]);
+
+                $er = DbQuery::getUserPsw("users", ["email" => "cvmfg@ya.ru"]);
+
+
+                var_dump($er);
+
+                return PasswordHelper::verifyPsw($fields[self::$checkingPswField], PasswordHelper::generatePsw($er));
+
+                //DbQuery::insert(self::$checkingTable, $fields);
+
+            } else {
+                throw new Error("user with this email don't exist");
+            }
+        } else {
+            throw new Error("passed fields not equal to reqiring list of fields");
+        }
+    }
+
+
     /*
      * Суть в том, чтобы проверить, имеются ли в переданном массиве все ключи из тех, что заданы в $checkingUserFieldsList для регистрации
      * Берем количество элементов в эталонном $checkingUserFieldsList и сравниваем с количеством вернувшихся элементов от следующей операции:
@@ -142,11 +173,23 @@ class UserAuth
      * представлены в обоих массивах. То есть, результатом в идеале является ровно то же число элементов, что указано в нашем эталонном массиве
      * 3. Если количество элементов одинаковое, то проверка на корректность пройдена, все требуемые поля в наличии.
      */
-    public static function checkRegistrationFields($data)
+    public static function checkRegistrationFields($originalFieldList, $data)
     {
-        return count(self::$checkingUserFieldsList) === count(array_intersect_key($data, array_flip(self::$checkingUserFieldsList)));
+        return count($originalFieldList) === count(array_intersect_key($data, array_flip($originalFieldList)));
     }
 }
+
+
+
+try {
+    var_dump(UserAuth::userAuthorize(["email" => "cvmfg@ya.ru", "psw" => "345667"]));
+} catch (Error $e) {
+    var_dump($e->getMessage());
+}
+
+
+
+die();
 
 
 $data = [
@@ -263,6 +306,19 @@ class DbQuery extends Db
         }
     }
 
+    public static function getUserPsw($table, $record)
+    {
+        try {
+            $query = array_keys($record)[0] . "=:" . array_keys($record)[0];
+            $pdo = DB::connectDb()->prepare("SELECT psw FROM {$table} WHERE {$query} LIMIT 1");
+            $pdo->execute($record);
+            return $pdo->fetchColumn();
+        } catch (Exception $e) {
+            return PrintHelper::pre("Ошибка при операции getItem " . $e->getMessage());
+        }
+    }
+
+
 
     /**
      * @param $table
@@ -324,9 +380,14 @@ class DbQuery extends Db
     public static function checkRecord($table, $record)
     {
         try {
+            var_dump($record);
             $query = array_keys($record)[0] . "=:" . array_keys($record)[0];
             $pdo = DB::connectDb()->prepare("SELECT * FROM $table WHERE {$query} LIMIT 1");
+
+            var_dump($pdo->queryString);
             $pdo->execute($record);
+            var_dump($pdo->fetch());
+
             return $pdo->rowCount() !== 0 ? true : false;
         } catch (Exception $e) {
             return PrintHelper::pre("Ошибка при операции checkRecord " . $e->getMessage());
