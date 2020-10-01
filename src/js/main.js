@@ -8,7 +8,6 @@ require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
 
 
 
-
 const data = {
   phone: {
       cnt: 12,
@@ -153,41 +152,9 @@ let st = {
     "expires" : "Tue, 19 Jan 2038 03:14:07 GMT"
 };
 
-let str = "";
-let arr = Object.keys(st);
 
 
 
-Object.keys(st).forEach((item, key, array) => {
-    str += (array.indexOf(item) + 1 !== array.length) ? item + "=" + st[item] + "; " : item + "=" + st[item] + "";
-});
-
-
-
-
-for (const item of arr) {
-    //console.log(item);
-    
-    //str += item + "=" + arr[item] + (arr.indexOf(item) + 1 === arr.length) ? ";" : "";
-    //str += (arr.indexOf(item) + 1 !== arr.length) ? item + "=" + arr[item] + ";" : item + "=" + arr[item] + "";
-
-    // let i = arr.indexOf(item);
-    // console.log(i);
-    
-    // if (Object.keys(st).indexOf(item) + 1 === Object.keys(st).length) {
-    //     console.log(1);
-    // }
-}
-
-
-
-
-
-class DateHelper {
-    static toUTCString(offset = null) {
-
-    }
-}
 
 
 const df = {days: 12, hours: 2, minutes: 30, seconds: 30};
@@ -264,44 +231,85 @@ class CookieHelper {
 //console.log(CookieHelper.hasCookie("ss"));
 
 
-const au = document.querySelector(".user-auth");
 
 
-function render() {
+(function () {
     if (CookieHelper.hasCookie("auth")) {
         const data = CookieHelper.getCookie("auth");
-        console.log(data);
-        const p = document.createElement("p");
-        p.innerText = `Hello ${data.value.name}`;
-        p.style.cssText = "margin-right: 10px";
-        const button = document.createElement("button");
-        button.innerText = "Exit";
-        button.style.cssText = "background-color: red; color: white; padding: 2px 10px; align-self: center";
 
-        button.addEventListener("click", () => {
-            userExit(data.name).then()
-        });
-
-        au.append(p);
-        au.append(button);
-
+        const au = document.querySelector(".user-auth");
+        const form = document.querySelector(".form");
+        form.replaceWith((UserAccountForm(data)));
 
     }
+})();
+
+
+
+
+
+function UserAccountForm(data) {
+
+    const div = document.createElement("div");
+    div.style.cssText = "padding: 5px 10px; margin: 20px auto; width: 30%; border: 2px solid black";
+    const p = document.createElement("p");
+    p.innerText = `Hello ${data.value.name}`;
+    p.style.cssText = "margin-right: 10px";
+    const button = document.createElement("button");
+    button.innerText = "Exit";
+    button.style.cssText = "background-color: red; color: white; padding: 2px 10px; align-self: center";
+
+    div.append(p);
+    div.append(button);
+
+    return div;
 }
 
 
 
 
-async function userExit(name) {
+function render(form) {
+    if (CookieHelper.hasCookie("auth")) {
+        const data = CookieHelper.getCookie("auth");
+
+        console.log(data);
+
+        // const div = document.createElement("div");
+        // div.style.cssText = "padding: 5px 10px; margin: 20px auto; width: 30%; border: 2px solid black";
+        // const p = document.createElement("p");
+        // p.innerText = `Hello ${data.value.name}`;
+        // p.style.cssText = "margin-right: 10px";
+        // const button = document.createElement("button");
+        // button.innerText = "Exit";
+        // button.style.cssText = "background-color: red; color: white; padding: 2px 10px; align-self: center";
+
+
+        const div = UserAccountForm(data);
+
+        div.children[1].addEventListener("click", () => {
+            userExit(data.name, div, form).then()
+        });
+
+        // div.append(p);
+        // div.append(button);
+
+
+        form.replaceWith(div);
+    }
+}
+
+
+
+async function userExit(name, div, form) {
     const responce = await Request.sendRequest("/dist/data.php", {
         method: "GET",
         headers: {
             "User-Exit": "auth"
         }
     });
+    div.replaceWith(form);
+
 }
-
-
 
 
 class UserAuth {
@@ -310,7 +318,7 @@ class UserAuth {
     }
 
     static formHandler(form) {
-        if (form.nodeType === 1 && form.nodeName === "FORM") {
+        if (form !== null && form.nodeType === 1 && form.nodeName === "FORM") {
             const formDataSet = new FormData(form);
             const options = {method: "POST", body: formDataSet, headers: {
                     'Data-Type': 'fetch/form-data',
@@ -321,8 +329,10 @@ class UserAuth {
                 try {
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
                     const token = UserAuth.decodeSignedData(responce);
-                    CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
-                    render();
+                    if (token.allowed) {
+                        CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
+                        render(this);
+                    }
                 } catch (e) {
                     console.log("error when request to form:" ,e);
                 }

@@ -20,7 +20,10 @@ const imageminMozjpeg = require('imagemin-mozjpeg');
 const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
 
+
+// deleted
 const HandlebarsPlugin = require("handlebars-webpack-plugin");
+
 
 module.exports = {
     entry: path.resolve(__dirname, "src/js/main.js"),
@@ -52,7 +55,6 @@ module.exports = {
     // Unexpected token: keyword «const»
     optimization: {
         minimizer: [
-
             // ENABLE FOR BABEL
             new UglifyJsPlugin(),
 
@@ -69,66 +71,22 @@ module.exports = {
     plugins: [
 
         //HtmlWebPackPlugin - основной плагин для генерации html через webpack
-
+        // templateParameters - данные, передаваемые в шаблон
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'src/tpl/index.hbs'), // Плагин, для обработки файлов с расширением hbs
             templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
-            //filename: path.resolve(__dirname, 'dist/index.html'), // Плагин, для обработки файлов с расширением hbs
-            //inject: true
-            //filename: 'index.html',
-            //template: 'dist/index.html'
         }),
         new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
             filename: 'page.html',
-            template: path.resolve(__dirname, 'src/tpl/page.hbs')
+            template: path.resolve(__dirname, 'src/tpl/page.hbs'),
+            templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
+
         }),
         new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
             filename: '404.html',
-            template: path.resolve(__dirname, 'src/tpl/404.hbs')
+            template: path.resolve(__dirname, 'src/tpl/404.hbs'),
+            templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
         }),
-
-
-
-
-        // На этапе использования данного плагина он работал только так:
-        // 1. Сначала комментишь HtmlWebpackPlugin, чтоб он не запускался, потом вызываешь HandlebarsPlugin, он создает файлы, комментишь плагин
-        // 2. Потом расккоментишь HtmlWebpackPlugin, комментишь HandlebarsPlugin, вызываешь HtmlWebpackPlugin и он вставляет внешние ресурсы. Криво, но вот так.
-        // new HandlebarsPlugin({
-        //     // path to hbs entry file(s). Also supports nested directories if write path.join(process.cwd(), "app", "src", "**", "*.hbs"),
-        //     entry: path.resolve(__dirname, "src/tpl/{index,page,404}.hbs"),
-        //
-        //     // output path and filename(s). This should lie within the webpacks output-folder
-        //     // if ommited, the input filepath stripped of its extension will be used
-        //     //output: path.join(process.cwd(), "build", "[name].html"),
-        //
-        //     output: path.resolve(__dirname, "dist", "[name].html"),
-        //
-        //     // you can als add a [path] variable, which will emit the files with their relative path, like
-        //     // output: path.join(process.cwd(), "build", [path], "[name].html"),
-        //
-        //     // data passed to main hbs template: `main-template(data)`
-        //     //data: require("./app/data/data.json"),
-        //
-        //     //data: require(path.resolve(__dirname, "src/js/data.json")),
-        //
-        //     data: require("./src/js/data.json"),
-        //
-        //     // or add it as filepath to rebuild data on change using webpack-dev-server
-        //     //data: path.resolve(__dirname, "src/js/data.json"),
-        //
-        //     // globbed path to partials, where folder/filename is unique
-        //     partials: [
-        //         //path.join(process.cwd(), "app", "src", "components", "*", "*.hbs")
-        //         path.resolve(__dirname, "src/tpl/common/header.hbs"),
-        //         path.resolve(__dirname, "src/tpl/common/footer.hbs"),
-        //         path.resolve(__dirname, "src/tpl/common/modals.hbs"),
-        //         path.resolve(__dirname, "src/tpl/common/sprite.hbs"),
-        //     ],
-        // }),
-
-
-
-
 
 
         // MiniCssExtractPlugin - создает отдельный файл css для того, что импортировано в основной js-файл. Заменяет
@@ -156,7 +114,6 @@ module.exports = {
         // Данный плагин очищает директорию output при каждой сборке проекта, нюанс в том, что он очищает папку, и те
         // файлы, которые не пересоздаются (так как их не меняли), такие как шаблоны, удаляются и не появлются, но,
         // если внести изменения в файл шаблона, то все удалится, а новый шаблон будет создан.
-
         //new CleanWebpackPlugin({}),
     ],
     module: {
@@ -168,6 +125,14 @@ module.exports = {
             {
                 test: /\.(hbs|handlebars)$/,
                 loader: "handlebars-loader",
+
+                // Для использования сторонних хелперов включи knownHelpersOnly, директория для хелперов - опционально
+                // options: {
+                //     //helperDirs: path.join(__dirname, 'modules/helpers'),
+                //     precompileOptions: {
+                //         knownHelpersOnly: false,
+                //     },
+                // },
             },
 
             // При обработке css/scss верхним (то есть последним) выполняется MiniCssExtractPlugin, он создает css файл и
