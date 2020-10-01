@@ -142,22 +142,58 @@ class DbQuery extends Db
     }
 
 
-
     /**
-     * @param $id
      * @param $table
-     * @return mixed - вернет ассоциативный массив с записью
+     * @param $id
+     * @return mixed|null
      */
     public static function getItem($table, $id)
     {
-        return self::connectDb()->query("SELECT * FROM {$table} WHERE id={$id} LIMIT 1")->fetch();
+        try {
+            $pdo = DB::connectDb()->prepare("SELECT * FROM {$table} WHERE id={$id} LIMIT 1");
+            $pdo->execute();
+            return $pdo->fetch();
+        } catch (Exception $e) {
+            return PrintHelper::pre("Ошибка при операции getItem " . $e->getMessage());
+        }
+    }
+
+
+    public static function setSQLQuery($queryString, $fetchType = "fetchAll") {
+        try {
+            $pdo = DB::connectDb()->prepare($queryString);
+            $pdo->execute();
+            return $pdo->$fetchType();
+        } catch (Exception $e) {
+            return PrintHelper::pre("Ошибка при операции setSQLQuery " . $e->getMessage());
+        }
+    }
+
+
+    public static function getColumn($table, $columnTitle)
+    {
+        try {
+            $pdo = DB::connectDb()->prepare("SELECT {$columnTitle} FROM {$table}");
+            $pdo->execute();
+            //return $pdo->fetchAll();
+
+            return $pdo->fetchAll(PDO::FETCH_COLUMN);
+
+        } catch (Exception $e) {
+            return PrintHelper::pre("Ошибка при операции getColumn " . $e->getMessage());
+        }
     }
 
 
     public static function getAll($table)
     {
-        return self::connectDb()->query("SELECT * FROM {$table} WHERE id={$id} LIMIT 1")->fetch();
-
+        try {
+            $pdo = DB::connectDb()->prepare("SELECT * FROM {$table}");
+            $pdo->execute();
+            return $pdo->fetchAll();
+        } catch (Exception $e) {
+            return PrintHelper::pre("Ошибка при операции getAll " . $e->getMessage());
+        }
     }
 
 
@@ -184,23 +220,23 @@ class DbQuery extends Db
      * @param $table
      * @return int - вернет количество удаленных записей, если вернет 0 - то ничего не удалено
      */
-    public static function delete($id, $table)
+    public static function delete($table, $id)
     {
         try {
             $pdo = DB::connectDb()->prepare("DELETE FROM $table WHERE id={$id} LIMIT 1");
             $pdo->execute();
             return $pdo->rowCount();
         } catch (Exception $e) {
-            return PrintHelper::pre("Ошибка при операции checkRecord " . $e->getMessage());
+            return PrintHelper::pre("Ошибка при операции delete " . $e->getMessage());
         }
     }
 }
 
 
 
-
 //PrintHelper::pre(DbQuery::getItem("1", "users"));
-PrintHelper::pre(DbQuery::checkRecord("users", "id", 70));
+//PrintHelper::pre(DbQuery::checkRecord("users", "id", 70));
+PrintHelper::pre(DbQuery::getColumn("users", "email, psw"));
 
 //var_dump(DbQuery::insert(["name" => "stan", "email" => "us#ya.ru", "psw" => "12345"], "users"));
 //var_dump(DbQuery::update(["name" => "stan2"], "user1s", 5));
