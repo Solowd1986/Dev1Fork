@@ -40,7 +40,7 @@ class Db
 }
 
 
-class UserAuth
+class PasswordHelper
 {
     public static function generatePsw($psw)
     {
@@ -57,6 +57,128 @@ class UserAuth
 
     }
 }
+
+
+
+class DataSanitizeHelper
+{
+    private static function cln($str, $email = false)
+    {
+        return preg_replace("/[^\w@.+]/i", "", trim(filter_var($str, !$email ? FILTER_SANITIZE_STRING : FILTER_SANITIZE_EMAIL)));
+    }
+
+    public static function run($data)
+    {
+        $sanitizeData = [];
+        foreach ($data as $key => $value) {
+            if ($key === "email" || strpos($value, "@")) {
+                $sanitizeData[DataSanitizeHelper::cln($key)] = DataSanitizeHelper::cln($value, true);
+            } else {
+                $sanitizeData[DataSanitizeHelper::cln($key)] = DataSanitizeHelper::cln($value);
+            }
+        }
+        return $sanitizeData;
+    }
+}
+
+
+
+
+
+
+
+$data2 = [
+    "login" => "asseta",
+    "e11mail" => "logo@yaw.ru",
+    "psw" => 1234,
+    "name" => "stan",
+    "blod" => true
+];
+
+
+
+
+
+DataSanitizeHelper::run($data2);
+
+
+
+
+
+
+
+class UserAuth
+{
+    private static $checkingUserFieldsList = ["login", "email", "psw", "name"];
+    private static $checkingTable = "users";
+    private static $checkingUniqueField = "email";
+    private static $passwordFieldTitle = "psw";
+
+    public static function userRegistration($data)
+    {
+        if (self::checkRegistrationFields($data)) {
+            // формируем массив для вставки только из заданных в $checkingUserFieldsList полей, первым общий массив,
+            // элементы с общими ключами уйдут в результат имеено поэтому array_flip - чтобы значения стали ключами
+            // и сравнение прошло корректно.
+
+            $fields = array_intersect_key($data, array_flip(self::$checkingUserFieldsList));
+
+            if (!DbQuery::checkRecord(self::$checkingTable, [self::$checkingUniqueField => $fields[self::$checkingUniqueField]])) {
+                $fields[self::$passwordFieldTitle] = PasswordHelper::generatePsw($fields[self::$passwordFieldTitle]);
+                DbQuery::insert(self::$checkingTable, $fields);
+            } else {
+                throw new Error("user with this email already exist");
+            }
+        } else {
+            throw new Error("passed fields not equal to reqiring list of fields");
+        }
+    }
+
+    /*
+     * Суть в том, чтобы проверить, имеются ли в переданном массиве все ключи из тех, что заданы в $checkingUserFieldsList для регистрации
+     * Берем количество элементов в эталонном $checkingUserFieldsList и сравниваем с количеством вернувшихся элементов от следующей операции:
+     * 1. Дан переданных массив, со множестовм ключей, есть наш $checkingUserFieldsList массив, там ключи это значения, он целочисленных просто
+     * 2. Переворачиваем этот массив, теперь значения это ключи, сравнивая через array_intersect_key в результат уйдут все ключи, которые
+     * представлены в обоих массивах. То есть, результатом в идеале является ровно то же число элементов, что указано в нашем эталонном массиве
+     * 3. Если количество элементов одинаковое, то проверка на корректность пройдена, все требуемые поля в наличии.
+     */
+    public static function checkRegistrationFields($data)
+    {
+        return count(self::$checkingUserFieldsList) === count(array_intersect_key($data, array_flip(self::$checkingUserFieldsList)));
+    }
+}
+
+
+$data = [
+    "login" => "asseta",
+    "email" => "logo@yaw.ru",
+    "psw" => 1234,
+    "name" => "stan",
+    "blod" => true
+];
+
+
+//$names = array_map(function($person) { return $person['name']; }, $data);
+
+
+
+
+
+
+
+try {
+    UserAuth::userRegistration($data);
+} catch (Error $e) {
+    PrintHelper::pre($e->getMessage());
+}
+
+
+
+
+
+
+
+
 
 
 class UserToken
@@ -93,7 +215,7 @@ class PrintHelper {
 
 class DbQuery extends Db
 {
-    public static function insert($arrayUserData, $table)
+    public static function insert($table, $arrayUserData)
     {
         $columns = [];
         foreach ($arrayUserData as $key => $value) {
@@ -175,10 +297,7 @@ class DbQuery extends Db
         try {
             $pdo = DB::connectDb()->prepare("SELECT {$columnTitle} FROM {$table}");
             $pdo->execute();
-            //return $pdo->fetchAll();
-
             return $pdo->fetchAll(PDO::FETCH_COLUMN);
-
         } catch (Exception $e) {
             return PrintHelper::pre("Ошибка при операции getColumn " . $e->getMessage());
         }
@@ -199,15 +318,15 @@ class DbQuery extends Db
 
     /**
      * @param $table
-     * @param $key
-     * @param $value
-     * @return bool - если rowCount больше нуля, значит запись есть, вернет true, иначе - false
+     * @param $record
+     * @return bool|null
      */
-    public static function checkRecord($table, $key, $value)
+    public static function checkRecord($table, $record)
     {
         try {
-            $pdo = DB::connectDb()->prepare("SELECT * FROM $table WHERE {$key}={$value} LIMIT 1");
-            $pdo->execute();
+            $query = array_keys($record)[0] . "=:" . array_keys($record)[0];
+            $pdo = DB::connectDb()->prepare("SELECT * FROM $table WHERE {$query} LIMIT 1");
+            $pdo->execute($record);
             return $pdo->rowCount() !== 0 ? true : false;
         } catch (Exception $e) {
             return PrintHelper::pre("Ошибка при операции checkRecord " . $e->getMessage());
@@ -324,6 +443,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //var_dump_pre($_POST);
         //print jsonEncodeData(["name" => "gill"], $_POST);
+
+
+        $sanitizedPost = DataSanitizeHelper::run($_POST);
+
+
         $tokenData = [
             "tokenName" => "auth",
             "uid" => 34467,
@@ -335,7 +459,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "expires" => (time() + 3600) * 1000,
             "max-age" => 3600
         ];
-        print UserToken::packedData($tokenData);
+
+        //print UserToken::packedData($tokenData);
     }
 
 
