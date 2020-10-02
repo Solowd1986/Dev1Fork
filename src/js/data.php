@@ -13,7 +13,6 @@ $passedData = [
 ];
 
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (empty($_POST)) {
@@ -32,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         $sanitizedPost = \php\auth\helpers\DataSanitizeHelper::run($_POST);
-        $res = UserAuth::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData));
+        $res = \php\auth\UserRegistration::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData));
         $tokenData = [
             "tokenName" => "auth",
             "uid" => 34467,
@@ -47,8 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //print UserToken::packedData($tokenData);
         $responce["errors"] = [];
-        if (!empty(UserAuth::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData)))) {
-            $responce["errors"]["registrationFormErrors"] = UserAuth::checkUserRegistrationFields(DataSanitizeHelper::run($passedData));
+        if (!empty(\php\auth\UserRegistration::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData)))) {
+            $responce["errors"]["registrationFormErrors"] = \php\auth\UserRegistration::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData));
         }
         print json_encode($responce);
     }
