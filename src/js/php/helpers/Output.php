@@ -1,6 +1,6 @@
 <?php
 
-namespace php\auth\helpers;
+namespace php\helpers;
 
 class Output
 {
