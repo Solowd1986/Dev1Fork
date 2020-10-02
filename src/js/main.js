@@ -327,17 +327,23 @@ class UserAuth {
                 evt.preventDefault();
                 try {
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
-                    
-                    console.log(responce);
+
+                    //console.log(responce);
+                    const red = JSON.parse(responce);
                     const div = document.querySelector(".result");
-                    div.innerHTML = responce;
-                    
-                    
-                    const token = UserAuth.decodeSignedData(responce);
-                    if (token.allowed) {
-                        CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
-                        render(this);
+                    console.dir(red);
+
+                    if (red.errors.registrationFormErrors.length !== 0) {
+                        div.innerHTML = red.errors.registrationFormErrors.login;
                     }
+
+
+                    //const token = UserAuth.decodeSignedData(responce);
+                    // if (token.allowed) {
+                    //     CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
+                    //     render(this);
+                    // }
+
                 } catch (e) {
                     console.log("error when request to form:" ,e);
                 }

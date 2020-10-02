@@ -67,6 +67,11 @@ class DataSanitizeHelper
         return preg_replace("/[^\w@.+]/i", "", trim(filter_var($str, !$email ? FILTER_SANITIZE_STRING : FILTER_SANITIZE_EMAIL)));
     }
 
+    private static function check($checkingData)
+    {
+
+    }
+
     public static function run($data)
     {
         $sanitizeData = [];
@@ -80,6 +85,8 @@ class DataSanitizeHelper
         return $sanitizeData;
     }
 }
+
+
 
 
 
@@ -104,11 +111,8 @@ $data2 = [
 
 
 
-
-
 class UserAuth
 {
-    
     private static $checkingUserFieldsList = ["login", "email", "psw", "name"];
     private static $checkingTable = "users";
     private static $checkingUniqueField = "email";
@@ -138,6 +142,48 @@ class UserAuth
         } else {
             throw new Error("passed fields not equal to reqiring list of fields");
         }
+    }
+
+
+    public static function checkUserRegistrationFields($passedUserFields)
+    {
+        $userFieldsRequirement = [
+            "login" => [
+                "minChars" => "4",
+                "maxChars" => "10",
+                "allowedCharsRegExp" => '/[\w+]/i'
+            ],
+            "email" => [
+                "minChars" => "6",
+                "maxChars" => "25",
+                "allowedCharsRegExp" => '/^(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){255,})(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){65,}@)(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22))(?:\.(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-[a-z0-9]+)*\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-[a-z0-9]+)*)|(?:\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\]))$/iD'
+            ],
+            "psw" => [
+                "minChars" => "6",
+                "maxChars" => "25",
+                "allowedCharsRegExp" => '/[\w+]/i'
+            ],
+            "name" => [
+                "minChars" => "2",
+                "maxChars" => "10",
+                "allowedCharsRegExp" => '/[\w+]/i'
+            ],
+        ];
+
+
+        $errors = [];
+        foreach ($passedUserFields as $key => $value) {
+            if (!preg_match($userFieldsRequirement[$key]["allowedCharsRegExp"], $value)) {
+                $errors[$key][] = "Для поля {$key} выбраны недопустимые символы";
+            }
+            if ($value < $userFieldsRequirement[$key]["minChars"]) {
+                $errors[$key][] = "Поле {$key} должно содержать не менее {$userFieldsRequirement[$key]["minChars"]} символов";
+            }
+            if ($value < $userFieldsRequirement[$key]["maxChars"]) {
+                $errors[$key][] = "Поле {$key} должно содержать не более {$userFieldsRequirement[$key]["maxChars"]} символов";
+            }
+        }
+        return $errors;
     }
 
 
@@ -188,25 +234,33 @@ class UserAuth
 }
 
 
+$passedData = [
+    "login" => "",
+    "email" => "logo@yaw.ru",
+    "psw" => 1234,
+    "name" => "stan",
+];
+
 
 try {
-    var_dump(UserAuth::userAuthorize(["email" => "cvmfg@ya.ru", "psw" => "345667"]));
+    //var_dump(UserAuth::userAuthorize(["email" => "cvmfg@ya.ru", "psw" => "345667"]));
+
+    //var_dump(UserAuth::checkUserRegistrationFields(DataSanitizeHelper::run($passedData)));
+
+    if (!UserAuth::checkUserRegistrationFields(DataSanitizeHelper::run($passedData))) {
+        //var_dump("no err");
+    } else {
+        //var_dump("err");
+    }
 } catch (Error $e) {
     var_dump($e->getMessage());
 }
 
 
+//die();
 
-die();
 
 
-$data = [
-    "login" => "asseta",
-    "email" => "logo@yaw.ru",
-    "psw" => 1234,
-    "name" => "stan",
-    "blod" => true
-];
 
 
 //$names = array_map(function($person) { return $person['name']; }, $data);
@@ -216,12 +270,12 @@ $data = [
 
 
 
-
-try {
-    UserAuth::userRegistration($data);
-} catch (Error $e) {
-    PrintHelper::pre($e->getMessage());
-}
+//
+//try {
+//    UserAuth::userRegistration($data);
+//} catch (Error $e) {
+//    PrintHelper::pre($e->getMessage());
+//}
 
 
 
@@ -424,7 +478,8 @@ class DbQuery extends Db
 
 //PrintHelper::pre(DbQuery::getItem("1", "users"));
 //PrintHelper::pre(DbQuery::checkRecord("users", "id", 70));
-PrintHelper::pre(DbQuery::getColumn("users", "email, psw"));
+
+//PrintHelper::pre(DbQuery::getColumn("users", "email, psw"));
 
 //var_dump(DbQuery::insert(["name" => "stan", "email" => "us#ya.ru", "psw" => "12345"], "users"));
 //var_dump(DbQuery::update(["name" => "stan2"], "user1s", 5));
@@ -515,8 +570,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         $sanitizedPost = DataSanitizeHelper::run($_POST);
-
-
+        $res = UserAuth::checkUserRegistrationFields(DataSanitizeHelper::run($passedData));
         $tokenData = [
             "tokenName" => "auth",
             "uid" => 34467,
@@ -530,6 +584,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ];
 
         //print UserToken::packedData($tokenData);
+        $responce["errors"] = [];
+        if (!empty(UserAuth::checkUserRegistrationFields(DataSanitizeHelper::run($passedData)))) {
+            $responce["errors"]["registrationFormErrors"] = UserAuth::checkUserRegistrationFields(DataSanitizeHelper::run($passedData));
+        }
+        print json_encode($responce);
     }
 
 
