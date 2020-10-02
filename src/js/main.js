@@ -337,7 +337,6 @@ class UserAuth {
                         div.innerHTML = red.errors.registrationFormErrors.login;
                     }
 
-
                     //const token = UserAuth.decodeSignedData(responce);
                     // if (token.allowed) {
                     //     CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
