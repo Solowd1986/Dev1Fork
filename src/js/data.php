@@ -42,7 +42,7 @@ class Db
 
 class PasswordHelper
 {
-    public static function generatePsw($psw)
+    public static function encodePsw($psw)
     {
         return password_hash($psw, PASSWORD_DEFAULT);
     }
@@ -108,6 +108,7 @@ $data2 = [
 
 class UserAuth
 {
+    
     private static $checkingUserFieldsList = ["login", "email", "psw", "name"];
     private static $checkingTable = "users";
     private static $checkingUniqueField = "email";
@@ -117,10 +118,11 @@ class UserAuth
     private static $checkingAuthTable = "users";
     private static $checkingAuthField = "email";
     private static $checkingPswField = "psw";
+    
 
     public static function userRegistration($data)
     {
-        if (self::checkRegistrationFields(self::$checkingUserFieldsList, $data)) {
+        if (self::checkFieldsAccordance(self::$checkingUserFieldsList, $data)) {
             // формируем массив для вставки только из заданных в $checkingUserFieldsList полей, первым общий массив,
             // элементы с общими ключами уйдут в результат имеено поэтому array_flip - чтобы значения стали ключами
             // и сравнение прошло корректно.
@@ -128,7 +130,7 @@ class UserAuth
             $fields = array_intersect_key($data, array_flip(self::$checkingUserFieldsList));
 
             if (!DbQuery::checkRecord(self::$checkingTable, [self::$checkingUniqueField => $fields[self::$checkingUniqueField]])) {
-                $fields[self::$passwordFieldTitle] = PasswordHelper::generatePsw($fields[self::$passwordFieldTitle]);
+                $fields[self::$passwordFieldTitle] = PasswordHelper::encodePsw($fields[self::$passwordFieldTitle]);
                 DbQuery::insert(self::$checkingTable, $fields);
             } else {
                 throw new Error("user with this email already exist");
@@ -138,21 +140,23 @@ class UserAuth
         }
     }
 
+
+
     public static function userAuthorize($data)
     {
-        if (self::checkRegistrationFields(self::$checkingUserAuthFieldsList, $data)) {
+        if (self::checkFieldsAccordance(self::$checkingUserAuthFieldsList, $data)) {
             $fields = array_intersect_key($data, array_flip(self::$checkingUserAuthFieldsList));
             if (DbQuery::checkRecord(self::$checkingTable, [self::$checkingAuthField => $fields[self::$checkingAuthField]])) {
 
 
-                //$fields[self::$passwordFieldTitle] = PasswordHelper::generatePsw($fields[self::$passwordFieldTitle]);
+                //$fields[self::$passwordFieldTitle] = PasswordHelper::encodePsw($fields[self::$passwordFieldTitle]);
 
                 $er = DbQuery::getUserPsw("users", ["email" => "cvmfg@ya.ru"]);
 
 
                 var_dump($er);
 
-                return PasswordHelper::verifyPsw($fields[self::$checkingPswField], PasswordHelper::generatePsw($er));
+                return PasswordHelper::verifyPsw($fields[self::$checkingPswField], PasswordHelper::encodePsw($er));
 
                 //DbQuery::insert(self::$checkingTable, $fields);
 
@@ -165,17 +169,21 @@ class UserAuth
     }
 
 
+
     /*
-     * Суть в том, чтобы проверить, имеются ли в переданном массиве все ключи из тех, что заданы в $checkingUserFieldsList для регистрации
-     * Берем количество элементов в эталонном $checkingUserFieldsList и сравниваем с количеством вернувшихся элементов от следующей операции:
-     * 1. Дан переданных массив, со множестовм ключей, есть наш $checkingUserFieldsList массив, там ключи это значения, он целочисленных просто
-     * 2. Переворачиваем этот массив, теперь значения это ключи, сравнивая через array_intersect_key в результат уйдут все ключи, которые
-     * представлены в обоих массивах. То есть, результатом в идеале является ровно то же число элементов, что указано в нашем эталонном массиве
-     * 3. Если количество элементов одинаковое, то проверка на корректность пройдена, все требуемые поля в наличии.
+     * checkFieldsAccordance - проверка на соответствие переданных полей некоему эталонному набору.
+     * $originalFieldList - эталонный набор
+     * $data - проверяемый набор
+     * Результат - true, если в переданном наборе есть все позиции из эталонного.
+     * 1. Считаем количество элементов в эталонном наборе, этому значению должен будет соответствовать результат справа.
+     * 2. Вызываем array_intersect_key, он получает 2 массива и вернет те пары, ключи из которых есть в обоих массивах
+     * 3. Переворачиваем эталонный массив, так как его ключи целочисленные, он выглядит как ["email", "psw"], а нам нужно, чтобы значения стали ключами
+     * 4. array_intersect_key вернет совпадения по ключам, эталонный массив мы перевернули и все сработает как нужно.
+     * 5. Число получившихся элементов должно быть равно числу элементов для эталонного массива, значит, все элементы были найдены, тогда true
      */
-    public static function checkRegistrationFields($originalFieldList, $data)
+    public static function checkFieldsAccordance($originalFieldList, $testedArray)
     {
-        return count($originalFieldList) === count(array_intersect_key($data, array_flip($originalFieldList)));
+        return count($originalFieldList) === count(array_intersect_key($testedArray, array_flip($originalFieldList)));
     }
 }
 
