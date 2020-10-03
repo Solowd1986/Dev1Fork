@@ -108,6 +108,18 @@ module.exports = {
                     from: path.resolve(__dirname, "src/js/data.php"),
                     to: './'
                 },
+                {
+                    from: path.resolve(__dirname, "src/js/php"),
+                    to: './php'
+                },
+                {
+                    from: path.resolve(__dirname, "vendor"),
+                    to: './vendor'
+                },
+                {
+                    from: path.resolve(__dirname, "composer.json"),
+                    to: './'
+                },
             ],
         }),
 

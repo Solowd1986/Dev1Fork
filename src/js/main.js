@@ -316,6 +316,16 @@ class UserAuth {
         return JSON.parse(window.atob(str.substr(0, str.indexOf("|"))));
     }
 
+    static async tokenResponce(token) {
+        const tokenData = new FormData();
+        tokenData.append("token", token);
+
+        const options = {method: "POST", body: tokenData, headers: {
+                'Token-Status': 'Send',
+            }};
+        return await Request.sendRequest("data.php", options);
+    }
+
     static formHandler(form) {
         if (form !== null && form.nodeType === 1 && form.nodeName === "FORM") {
             const formDataSet = new FormData(form);
@@ -329,13 +339,23 @@ class UserAuth {
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
 
                     //console.log(responce);
-                    const red = JSON.parse(responce);
                     const div = document.querySelector(".result");
-                    console.dir(red);
 
-                    if (red.errors.registrationFormErrors.length !== 0) {
-                        div.innerHTML = red.errors.registrationFormErrors.login;
-                    }
+                    div.innerHTML = UserAuth.decodeSignedData(responce);
+                    
+                    console.log(UserAuth.decodeSignedData(responce));
+
+                    const ch2 = await UserAuth.tokenResponce(responce);
+                    console.dir(ch2);
+
+                    
+
+                    //const red = JSON.parse(responce);
+                    //console.dir(red);
+
+                    // if (red.errors.registrationFormErrors.length !== 0) {
+                    //     div.innerHTML = red.errors.registrationFormErrors.login;
+                    // }
 
                     //const token = UserAuth.decodeSignedData(responce);
                     // if (token.allowed) {

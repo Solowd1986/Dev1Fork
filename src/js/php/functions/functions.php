@@ -1,7 +1,7 @@
 <?php
 
 
-function var_dump_pre($mixed = null)
+function var_dump_pre($mixed)
 {
     echo '<pre>';
     print_r($mixed);

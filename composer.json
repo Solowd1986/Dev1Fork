@@ -1,9 +1,9 @@
 {
   "autoload": {
     "psr-4": {
-      "php\\db\\": "src/js/php/db",
-      "php\\auth\\": "src/js/php/auth",
-      "php\\auth\\helpers\\": "src/js/php/auth/helpers"
+      "php\\db\\": "php/db",
+      "php\\auth\\": "php/auth",
+      "php\\auth\\helpers\\": "php/auth/helpers"
     },
     "files": [
 
@@ -14,3 +14,4 @@
     "ext-apache": "*"
   }
 }
+
