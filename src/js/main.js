@@ -299,6 +299,86 @@ function render(form) {
 }
 
 
+function ins($token) {
+    const wrp = document.querySelector(".profile-block");
+    const user = {name: "Bob"};
+    const data = UserAuth.decodeSignedData($token);
+    const p = document.createElement("p");
+    (data.login !== "undefined") ? p.innerText = data.login : p.innerText = "John Doe";
+    wrp.append(p);
+}
+
+function setLocalStorage(token) {
+    
+}
+
+
+class LocalStorageHelper {
+    
+    static getItem(key) {
+        if (localStorage.getItem(key)) {
+            return JSON.parse(localStorage.getItem(key));
+        } else {
+            console.log("Элемента с таким ключом в localStorage не найдено");
+        }
+    }
+
+
+    static deleteItem() {
+
+    }
+
+    static setItem(key, value) {
+        if (localStorage.getItem(key)) {
+            console.log("Элемент с таким ключом уже есть в localStorage");
+        } else {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+    }
+
+    static hasItem(key) {
+        return localStorage.getItem(key);
+    }
+    
+}
+
+
+
+localStorage.setItem("nm", "bblo");
+const keyName = "region";
+const res = {[keyName]: localStorage.getItem("nm")};
+
+LocalStorageHelper.setItem("del", {name: "satan"});
+
+
+let tt = LocalStorageHelper.getItem("del");
+
+console.log(tt);
+
+
+
+
+
+
+
+function lstorage(key) {
+    if (localStorage.getItem(key)) {
+        
+    } 
+}
+
+
+
+function disableToken(token) {
+    if (CookieHelper.hasCookie(token.name)) {
+        
+    }
+}
+
+
+
+
+
 
 async function userExit(name, div, form) {
     const responce = await Request.sendRequest("/dist/data.php", {
@@ -336,12 +416,15 @@ class UserAuth {
             form.addEventListener("submit", async function (evt) {
                 evt.preventDefault();
                 try {
+
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
 
                     //console.log(responce);
                     const div = document.querySelector(".result");
 
                     div.innerHTML = UserAuth.decodeSignedData(responce);
+
+                    ins(responce);
                     
                     console.log(UserAuth.decodeSignedData(responce));
 

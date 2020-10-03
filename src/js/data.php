@@ -25,12 +25,20 @@ require_once realpath('php/functions/functions.php');
 
 
 
+use \php\auth\helpers\UserToken as UserToken;
+use \php\auth\UserRegistration as UserRegistration;
+use \php\auth\helpers\DataSanitizeHelper as DataSanitizeHelper;
+
+
 
 $passedData = [
     "login" => "bob",
     "email" => "lo1go@yaw.ru",
     "psw" => 1234,
 ];
+
+
+
 
 
 
@@ -42,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset(getallheaders()["Token-Status"])) {
         $token = $_POST["token"];
-        if (\php\auth\helpers\UserToken::verifyUserData($token)) {
+        if (UserToken::verifyUserData($token)) {
             var_dump_pre("Token solid");
         } else {
             var_dump_pre("Token wrong");
@@ -52,45 +60,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset(getallheaders()["Data-Type"])) {
 
-
-        $sanitizedPost = \php\auth\helpers\DataSanitizeHelper::run($_POST);
+        $sanitizedPost = DataSanitizeHelper::run($_POST);
         //var_dump($_POST);
 
-        if (empty(\php\auth\UserRegistration::checkUserRegistrationFields($sanitizedPost))) {
-
-            print \php\auth\helpers\UserToken::packedData($sanitizedPost);
-
-
-//            var_dump_pre("ext");
-//            var_dump($sanitizedPost);
-//            var_dump_pre("-----");
-
-
-            $token = \php\auth\helpers\UserToken::packedData($sanitizedPost);
-//            var_dump_pre("token");
-//            var_dump_pre($token);
-//            var_dump_pre("-----");
+        $tokenSuccess = [
+            "result" => true,
+            "tokenName" => "auth",
+            "uid" => 34467,
+            "allowed" => true,
+            "path" => "/",
+            "tokenId" => "sdf657gfhytutyutyu",
+            "name" => "Stan",
+            "role" => "user",
+            "expires" => (time() + 3600) * 1000,
+            "max-age" => 3600
+        ];
 
 
-            $t1 = explode(\php\auth\helpers\UserToken::$key_separator, $token)[0];
-            $t2 = explode(\php\auth\helpers\UserToken::$key_separator, $token)[1];
+        if (empty(UserRegistration::checkUserRegistrationFields($sanitizedPost))) {
 
-//            var_dump_pre($t1);
-//            var_dump_pre($t2);
-//
-//            var_dump_pre("decoded");
-//            var_dump(\php\auth\helpers\UserToken::decodeBase64Data($t1));
-//            var_dump_pre("-----");
-//
-//
-//            var_dump_pre(\php\auth\helpers\UserToken::verifyUserData($token));
-
-            if (\php\auth\helpers\UserToken::verifyUserData($token)) {
-                //var_dump_pre("oj");
-            }
-
-
-
+            print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess));
 
 
         }
@@ -98,40 +87,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        $tokenData = [
-            "tokenName" => "auth",
-            "uid" => 34467,
-            "allowed" => true,
-            "path" => "/",
-            "tokenId" => "sdf657gfhytutyutyu",
-            "name" => "Bob",
-            "role" => "user",
-            "expires" => (time() + 3600) * 1000,
-            "max-age" => 3600
-        ];
-
         //print UserToken::packedData($tokenData);
         $responce["errors"] = [];
-        if (!empty(\php\auth\UserRegistration::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData)))) {
-            $responce["errors"]["registrationFormErrors"] = \php\auth\UserRegistration::checkUserRegistrationFields(\php\auth\helpers\DataSanitizeHelper::run($passedData));
+        if (!empty(UserRegistration::checkUserRegistrationFields(DataSanitizeHelper::run($passedData)))) {
+            $responce["errors"]["registrationFormErrors"] = UserRegistration::checkUserRegistrationFields(DataSanitizeHelper::run($passedData));
         }
 
         //print json_encode($responce);

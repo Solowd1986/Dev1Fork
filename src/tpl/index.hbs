@@ -10,6 +10,16 @@
         {{/each}}
 
 
+        <div class="user-profile" style="height: 200px; display: flex">
+            <div class="profile-block"
+                 style="background-color: lightgrey;
+                        border: 1px solid red; margin-left: auto;
+                        margin-right: 20px; height: 120px; align-self: center;
+                        width:250px; padding: 15px; text-align: center">
+            </div>
+
+        </div>
+
         <div class="error" style="text-align: center; ">
 
         </div>
@@ -23,7 +33,7 @@
         </div>
 
         <form class="form" action="/dist/data.php" name="auth-form" method="POST" >
-            <input class="form__input" type="text" value="bob" name="login" id="login" maxlength="55" minlength="1" autocomplete="on" placeholder="Enter login..." required>
+            <input class="form__input" type="text" value="Stan" name="login" id="login" maxlength="55" minlength="1" autocomplete="on" placeholder="Enter login..." required>
             <input class="form__input" type="password" value="1234" name="psw" id="psw" maxlength="55" minlength="1" autocomplete="on" placeholder="Enter psw..." required>
             <input class="form__submit" type="submit" name="auth-submit" value="Send">
         </form>
