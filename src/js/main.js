@@ -308,25 +308,25 @@ function ins($token) {
     wrp.append(p);
 }
 
-function setLocalStorage(token) {
-    
-}
+
+
+
 
 
 class LocalStorageHelper {
     
     static getItem(key) {
         if (localStorage.getItem(key)) {
-            return JSON.parse(localStorage.getItem(key));
+            try {
+                return JSON.parse(localStorage.getItem(key));
+            } catch (e) {
+                return localStorage.getItem(key);
+            }
         } else {
             console.log("Элемента с таким ключом в localStorage не найдено");
         }
     }
 
-
-    static deleteItem() {
-
-    }
 
     static setItem(key, value) {
         if (localStorage.getItem(key)) {
@@ -336,46 +336,7 @@ class LocalStorageHelper {
         }
     }
 
-    static hasItem(key) {
-        return localStorage.getItem(key);
-    }
-    
 }
-
-
-
-localStorage.setItem("nm", "bblo");
-const keyName = "region";
-const res = {[keyName]: localStorage.getItem("nm")};
-
-LocalStorageHelper.setItem("del", {name: "satan"});
-
-
-let tt = LocalStorageHelper.getItem("del");
-
-console.log(tt);
-
-
-
-
-
-
-
-function lstorage(key) {
-    if (localStorage.getItem(key)) {
-        
-    } 
-}
-
-
-
-function disableToken(token) {
-    if (CookieHelper.hasCookie(token.name)) {
-        
-    }
-}
-
-
 
 
 
@@ -389,6 +350,53 @@ async function userExit(name, div, form) {
     });
     div.replaceWith(form);
 }
+
+
+const bresp = document.querySelector(".get-data");
+const exitBtn = document.querySelector(".exit-data");
+const answer = document.querySelector(".resp");
+
+
+exitBtn.addEventListener("click", function (evt) {
+    if (localStorage.getItem("token-key")) {
+        localStorage.removeItem("token-key");
+    }
+});
+
+
+
+
+bresp.addEventListener("click", async function (evt) {
+    if (localStorage.getItem("token-key")) {
+
+        const reg = LocalStorageHelper.getItem("token-key");
+        const ans = await UserAuth.tokenResponce(reg);
+
+        if (UserAuth.decodeSignedData(ans).allowed) {
+            if (UserAuth.decodeSignedData(ans)["has-expired"]) {
+                localStorage.removeItem("token-key");
+                console.log("token has removed like expired");
+            } else {
+                console.log(UserAuth.decodeSignedData(ans));
+                const data = UserAuth.decodeSignedData(reg);
+                console.dir(data);
+                answer.innerText = data.login;
+            }
+        } else {
+            localStorage.removeItem("token-key");
+            answer.innerText = "User not auth";
+        }
+    } else {
+        answer.innerText = "User not auth";
+    }
+});
+
+
+
+
+
+
+
 
 
 class UserAuth {
@@ -425,6 +433,7 @@ class UserAuth {
                     div.innerHTML = UserAuth.decodeSignedData(responce);
 
                     ins(responce);
+                    LocalStorageHelper.setItem("token-key", responce);
                     
                     console.log(UserAuth.decodeSignedData(responce));
 

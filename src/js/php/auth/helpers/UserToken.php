@@ -49,6 +49,38 @@ class UserToken
     }
 
 
+    public static function setTokenParams($token, $params) {
+        $data = self::decodeBase64Data(explode(self::$key_separator, $token)[0]);
+        foreach ($params as $key => $value) {
+            $data[$key] = $params[$key];
+        }
+        return UserToken::packedData($data);
+    }
+
+
+
+    /*
+     * Получаем токен, раскодируем через метод, забираем поле ситечения сркоа годности.
+     * Делим на 1000, так как time() работает с секундами, а в JS токен уходит с миллисекундами, чтоб там удобнее было.
+     * Сравниваем с текущей датой, если срок токена меньше, то есть время уже ушло вперед, то он истек
+     */
+    public static function hasTokenExpired($token)
+    {
+        return (self::decodeTokenData($token)["expiration-date"] / 1000) < time();
+    }
+
+    /*
+     * Раскодируем токен, берем первый из двух элементов массива, получившегося от деления строки токена по сепаратору
+     * Первая часть - это данные, вторая - это подпись. Нам нужна только первая тут, потом ее пропускаем через декодирование
+     */
+    public static function decodeTokenData($token) {
+        return self::decodeBase64Data(explode(self::$key_separator, $token)[0]);
+    }
+
+
+
+
+
     public static function verifyUserData($token)
     {
         /*

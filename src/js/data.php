@@ -24,7 +24,7 @@ require_once realpath('php/functions/functions.php');
 */
 
 
-
+use http\Client\Curl\User;
 use \php\auth\helpers\UserToken as UserToken;
 use \php\auth\UserRegistration as UserRegistration;
 use \php\auth\helpers\DataSanitizeHelper as DataSanitizeHelper;
@@ -42,6 +42,8 @@ $passedData = [
 
 
 
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (empty($_POST)) {
@@ -50,10 +52,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset(getallheaders()["Token-Status"])) {
         $token = $_POST["token"];
+
         if (UserToken::verifyUserData($token)) {
-            var_dump_pre("Token solid");
+            if (UserToken::hasTokenExpired($token)) {
+                print UserToken::setTokenParams($token, ["has-expired" => true]);
+            } else {
+                print UserToken::packedData(["allowed" => true]);
+            }
         } else {
-            var_dump_pre("Token wrong");
+            print UserToken::packedData(["allowed" => false]);
+            //var_dump_pre("Token wrong");
         }
     }
 
@@ -71,15 +79,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "path" => "/",
             "tokenId" => "sdf657gfhytutyutyu",
             "name" => "Stan",
-            "role" => "user",
-            "expires" => (time() + 3600) * 1000,
+            "role" => "user"
+        ];
+
+        $expired = [
+            "has-expired" => false,
+            "expiration-date" => (time() + 3600) * 1000,
             "max-age" => 3600
         ];
 
 
         if (empty(UserRegistration::checkUserRegistrationFields($sanitizedPost))) {
 
-            print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess));
+            print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess, $expired));
 
 
         }
