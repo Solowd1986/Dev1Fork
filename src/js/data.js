@@ -1,5 +1,5 @@
-export default [
-    {"name": "bob"}
-    ];
-//export let cnt = 12;
-
+export default class {
+    constructor(props) {
+        this.props = props;
+    }
+}

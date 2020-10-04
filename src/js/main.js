@@ -372,6 +372,7 @@ bresp.addEventListener("click", async function (evt) {
         const reg = LocalStorageHelper.getItem("token-key");
         const ans = await UserAuth.tokenResponce(reg);
 
+
         if (UserAuth.decodeSignedData(ans).allowed) {
             if (UserAuth.decodeSignedData(ans)["has-expired"]) {
                 localStorage.removeItem("token-key");
@@ -396,9 +397,6 @@ bresp.addEventListener("click", async function (evt) {
 
 
 
-
-
-
 class UserAuth {
     static decodeSignedData(str) {
         return JSON.parse(window.atob(str.substr(0, str.indexOf("|"))));
@@ -409,7 +407,7 @@ class UserAuth {
         tokenData.append("token", token);
 
         const options = {method: "POST", body: tokenData, headers: {
-                'Token-Status': 'Send',
+                'Token-Status': token,
             }};
         return await Request.sendRequest("data.php", options);
     }
@@ -427,8 +425,11 @@ class UserAuth {
 
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
 
-                    //console.log(responce);
+
+
                     const div = document.querySelector(".result");
+
+                    //div.innerHTML = responce;
 
                     div.innerHTML = UserAuth.decodeSignedData(responce);
 
@@ -440,21 +441,6 @@ class UserAuth {
                     const ch2 = await UserAuth.tokenResponce(responce);
                     console.dir(ch2);
 
-                    
-
-                    //const red = JSON.parse(responce);
-                    //console.dir(red);
-
-                    // if (red.errors.registrationFormErrors.length !== 0) {
-                    //     div.innerHTML = red.errors.registrationFormErrors.login;
-                    // }
-
-                    //const token = UserAuth.decodeSignedData(responce);
-                    // if (token.allowed) {
-                    //     CookieHelper.setCookie(token.tokenName, token, {expires: CookieHelper.cookieDateExpireHelper(token.expires, true), path: token.path});
-                    //     render(this);
-                    // }
-
                 } catch (e) {
                     console.log("error when request to form:" ,e);
                 }
@@ -462,6 +448,7 @@ class UserAuth {
         }
     }
 }
+
 
 
 UserAuth.formHandler(document.querySelector(".form"));

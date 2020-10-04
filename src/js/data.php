@@ -57,7 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (UserToken::hasTokenExpired($token)) {
                 print UserToken::setTokenParams($token, ["has-expired" => true]);
             } else {
-                print UserToken::packedData(["allowed" => true]);
+                print UserToken::packedData(["allowed" => true, "header" => getallheaders()["Token-Status"]]);
+                //print UserToken::packedData(["allowed" => true]);
             }
         } else {
             print UserToken::packedData(["allowed" => false]);
@@ -88,22 +89,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "max-age" => 3600
         ];
 
-
-        if (empty(UserRegistration::checkUserRegistrationFields($sanitizedPost))) {
-
-            print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess, $expired));
-
-
-        }
-
-
-
-
         //print UserToken::packedData($tokenData);
+
+
         $responce["errors"] = [];
-        if (!empty(UserRegistration::checkUserRegistrationFields(DataSanitizeHelper::run($passedData)))) {
-            $responce["errors"]["registrationFormErrors"] = UserRegistration::checkUserRegistrationFields(DataSanitizeHelper::run($passedData));
+        if (!empty(UserRegistration::checkUserRegistrationFields(DataSanitizeHelper::run($sanitizedPost)))) {
+            $responce["errors"]["registrationFormErrors"] = UserRegistration::checkUserRegistrationFields(DataSanitizeHelper::run($sanitizedPost));
         }
+
+        if (empty($responce["errors"])) {
+            print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess, $expired));
+        } else {
+            print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess, $expired, $responce["errors"]));
+        }
+
+
+
 
         //print json_encode($responce);
     }

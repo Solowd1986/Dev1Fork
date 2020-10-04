@@ -65,7 +65,8 @@ class UserRegistration
 
         $errors = [];
         foreach ($passedUserFields as $key => $value) {
-            if (!preg_match($userFieldsRequirement[$key]["allowedCharsRegExp"], $value)) {
+            // Проверяем на недопустимые символы, только если их количество больше или равно минимально допустимому.
+            if (strlen($value) >= $userFieldsRequirement[$key]["minChars"] && !preg_match($userFieldsRequirement[$key]["allowedCharsRegExp"], $value)) {
                 $errors[$key][] = "Для поля {$key} выбраны недопустимые символы";
             }
             if (strlen($value) < $userFieldsRequirement[$key]["minChars"]) {
