@@ -1,13 +1,10 @@
 
 
-.admin__title {
+.admin__title, .admin__table-title, .admin__title-of-element, .admin__sections-title {
   font-weight: 300;
 }
 
-.admin__sections {
 
-
-}
 
 
 .admin__list-of-sections {
@@ -98,7 +95,7 @@
 
 .admin__form-wrapper {
   border: 1px solid lightgrey;
-  padding: 30px;
+  padding: 20px;
   max-width: 70%;
   margin: 30px auto 30px;
 
