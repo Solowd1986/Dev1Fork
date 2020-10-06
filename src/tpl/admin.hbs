@@ -1,0 +1,91 @@
+
+
+{{> common/header}}
+<div class="container flex-grow-bottom" data-name-ban = "12">
+    <main class="wrapper flex-grow-bottom content">
+
+        {{#each phones}}
+            <p>{{@key}} : price = {{this.price}}</p>
+        {{/each}}
+
+        <h2 class="admin__title">Панель администратора</h2>
+        <h3 class="admin__sections">Доступные разделы</h3>
+        <ul class="admin__list-of-sections">
+            <li><button class="admin__btn">Пользователи</button></li>
+            <li><button class="admin__btn">Товары: телефоны</button></li>
+            <li><button class="admin__btn">Товары: периферия</button></li>
+            <li><button class="admin__btn">Товары: прочее</button></li>
+        </ul>
+
+
+        <h3 class="admin__table">Таблица: пользователи</h3>
+        <button class="admin__btn admin__add-item-btn">Добавить новый элемент</button>
+        <ul class="admin__list-of-records">
+            <li>
+                <p class="admin__field-record">Ttile</p>
+                <p class="admin__field-record">Desc</p>
+                <div class="admin__table-controls">
+                    <button class="admin__btn admin__edit-item-btn">Edit</button>
+                    <button class="admin__btn admin__delete-item-btn">Delete</button>
+                </div>
+            </li>
+            <li>
+                <p class="admin__field-record">Ttile</p>
+                <p class="admin__field-record">Desc</p>
+                <div class="admin__table-controls">
+                    <button class="admin__btn admin__edit-item-btn">Edit</button>
+                    <button class="admin__btn admin__delete-item-btn">Delete</button>
+                </div>
+            </li>
+            <li>
+                <p class="admin__field-record">Ttile</p>
+                <p class="admin__field-record">Desc</p>
+                <div class="admin__table-controls">
+                    <button class="admin__btn admin__edit-item-btn">Edit</button>
+                    <button class="admin__btn admin__delete-item-btn">Delete</button>
+                </div>
+            </li>
+        </ul>
+
+
+        <div class="admin__form-wrapper">
+
+        <h3 class="admin__title-of-element">Новый элемент</h3>
+        <form class="admin__new-elem-form" action="/" name="admin__elem-form" method="POST" >
+            <div>
+                <label for=""> Имя пользователя</label>
+                <input class="admin__form-input" type="text" name="elem1" required>
+            </div>
+
+            <div>
+                <label for=""> Адрес пользователя</label>
+                <input class="admin__form-input" type="text" name="elem2" required>
+            </div>
+
+            <div class="admin__form-file">
+                <label for=""> Загружаемый файл</label>
+                <input class="" type="file" name="file">
+            </div>
+
+            <input class="admin__form-submit" type="submit" name="auth-submit" value="Send">
+        </form>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+    </main>
+</div>
+{{> common/footer}}
+
+
+
+
+

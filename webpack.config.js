@@ -87,7 +87,11 @@ module.exports = {
             template: path.resolve(__dirname, 'src/tpl/404.hbs'),
             templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
         }),
-
+        new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
+            filename: 'admin.html',
+            template: path.resolve(__dirname, 'src/tpl/admin.hbs'),
+            templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
+        }),
 
         // MiniCssExtractPlugin - создает отдельный файл css для того, что импортировано в основной js-файл. Заменяет
         // style-loader, который включает стили инлайн в блок style, что как правило не нужно

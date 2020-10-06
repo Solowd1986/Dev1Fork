@@ -1,0 +1,158 @@
+
+
+.admin__title {
+  font-weight: 300;
+}
+
+.admin__sections {
+
+
+}
+
+
+.admin__list-of-sections {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  &>*:not(first-child) {
+    margin-right: 10px;
+  }
+
+}
+
+.admin__btn {
+  padding: 5px 10px;
+  color: white;
+  background-color: red;
+  font-size: 18px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-radius: 8px;
+    background-color: #de001e;
+  }
+
+
+}
+
+.admin__table {
+
+}
+
+.admin__add-item-btn {
+  align-self: center;
+}
+
+
+
+.admin__list-of-records {
+
+  margin: 30px auto 30px;
+  max-width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+
+}
+
+
+
+
+.admin__list-of-records li {
+
+  padding: 10px 20px;
+  margin-right: 20px;
+
+  border: 1px solid lightgrey;
+
+
+  -webkit-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+}
+
+
+.admin__new-elem-form {
+  display: flex;
+  flex-direction: column;
+
+
+
+  &>div:not(:last-child) {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+
+    & > label {
+      padding-right: 15px;
+    }
+
+    & > input {
+      margin-left: auto;
+    }
+  }
+}
+
+
+
+
+.admin__form-wrapper {
+  border: 1px solid lightgrey;
+  padding: 30px;
+  max-width: 70%;
+  margin: 30px auto 30px;
+
+  -webkit-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+
+
+}
+
+.admin__title-of-element {
+  margin-top: 0;
+
+}
+
+.admin__form-input {
+  padding: 5px 15px 5px 10px;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.admin__form-file, .admin__form-input, .admin__form-submit {
+  align-self: center;
+}
+
+.admin__form-file {
+  display: flex;
+  flex-direction: column;
+
+  &>* {
+    align-self: center;
+    padding-bottom: 10px;
+  }
+
+}
+
+.admin__form-submit {
+  padding: 5px 25px;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: lightgrey;
+
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+

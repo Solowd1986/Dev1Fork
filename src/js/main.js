@@ -393,6 +393,24 @@ bresp.addEventListener("click", async function (evt) {
 });
 
 
+class ModalComponent {
+    constructor(modalOptions) {
+        this.options = modalOptions;
+    }
+
+    createOverlay(parentElement, childElement) {
+        let elemOverlay = document.createElement("div");
+        this.options.overlayClass ? elemOverlay.classList.add(this.options.overlayClass) : elemOverlay.style.csstest = "position: relative;";
+
+        elemOverlay.addEventListener("click", function (evt) {
+            this.remove();
+            elemOverlay = null;
+        });
+
+        elemOverlay.append(childElement);
+        parentElement.append(elemOverlay);
+    }
+}
 
 
 
@@ -421,11 +439,9 @@ class UserAuth {
 
             form.addEventListener("submit", async function (evt) {
                 evt.preventDefault();
+
                 try {
-
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
-
-
 
                     const div = document.querySelector(".result");
 
@@ -453,37 +469,6 @@ class UserAuth {
 
 UserAuth.formHandler(document.querySelector(".form"));
 
-
-
-
-
-
-
-
-
-// form.addEventListener("submit", function (evt) {
-//     evt.preventDefault();
-//     //console.dir(this);
-//
-//     let formDataSet = new FormData(form);
-//     let options = {method: "POST", body: formDataSet, headers: {
-//             'Data-Type': 'user-form',
-//         }};
-//     Request.sendRequest("/dist/data.php", options).then(
-//         res => {
-//
-//             //let y = JSON.parse(decodeSignedData(res));
-//             console.log(decodeSignedData(res));
-//
-//
-//
-//             let t = document.querySelector(".result");
-//             t.innerHTML += res;
-//             //console.log(res);
-//         });
-//
-//
-// });
 
 
 
@@ -850,26 +835,6 @@ class Cart {
 
 
 
-// const list = new Cart(dataAll).render();
-//
-// const t = document.querySelector(".inner-list");
-// t.appendChild(list);
-
-
-
-
-async function f1() {
-    await new Promise(resolve => {
-        setTimeout(() => {
-            console.log("st");
-            resolve();
-            }, 2000);
-    });
-    console.log("done");
-    return "all stuff";
-}
-
-//f1().then(data => console.log(data));
 
 
 

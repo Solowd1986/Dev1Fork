@@ -70,7 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset(getallheaders()["Data-Type"])) {
 
         $sanitizedPost = DataSanitizeHelper::run($_POST);
-        //var_dump($_POST);
 
         $tokenSuccess = [
             "result" => true,
@@ -102,8 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             print UserToken::packedData(array_merge($sanitizedPost, $tokenSuccess, $expired, $responce["errors"]));
         }
-
-
 
 
         //print json_encode($responce);
