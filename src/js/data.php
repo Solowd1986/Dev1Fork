@@ -60,6 +60,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         print json_encode($_POST);
     }
 
+    if (isset(getallheaders()["Edit"]) && getallheaders()["Edit"] === "Yes") {
+        $id = $_POST['id'];
+        $table = $_POST['table'];
+
+        DbQueryCore::update($id, $table, $_POST);
+        //print json_encode($_POST);
+        exit();
+    }
+
+
     if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Delete") {
 
         //print $_POST["text"];
@@ -142,10 +152,20 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         print json_encode($res);
     }
 
+    if (isset(getallheaders()["Delete"])) {
+        $res = DbQueryCore::getItem($_GET["table"], $_GET["id"]);
+        print json_encode($res);
+        exit();
+    }
+
     if (array_key_exists('table', $_GET)) {
         $res = DbQueryCore::getAll($_GET["table"]);
         print json_encode($res);
+        exit();
     }
+
+
+
 
 
     if (isset(getallheaders()["User-Exit"])) {

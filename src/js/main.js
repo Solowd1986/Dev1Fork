@@ -482,6 +482,7 @@ class Edit {
     }
 
     render() {
+
         const divWrapper = document.createElement("div");
         divWrapper.classList.add("admin__form-wrapper");
 
@@ -653,7 +654,6 @@ rootElem.addEventListener("clic1k", async function (evt) {
                 ControlsBtnDelete.innerText = "Delete";
 
 
-
                 divControlsWrapper.append(ControlsBtnEdit, ControlsBtnDelete);
                 li.append(divControlsWrapper);
                 // for (let i = 12; i--;) {
@@ -670,6 +670,31 @@ rootElem.addEventListener("clic1k", async function (evt) {
 }, {once: true});
 
 
+
+
+
+
+
+
+
+
+function URIHelper(href) {
+    const obj = {};
+    obj.fullQuery = href.slice(href.lastIndexOf("/") + 1);
+    href.slice(href.lastIndexOf("/") + 1).split("&").forEach(item => {
+        obj[item.split("=")[0]] = item.split("=")[1];
+    });
+    return obj;
+}
+
+
+function createElem({tagName, classNameArray = [], innerText = ""} = {}) {
+    const elem = document.createElement(tagName);
+    classNameArray.length > 0 ? elem.classList.add(...classNameArray) : null;
+    elem.classList.add(...classNameArray);
+    innerText !== "" ? elem.innerText = innerText : null;
+    return elem;
+}
 
 
 
@@ -699,24 +724,7 @@ showTablesBtn.addEventListener("click", async function (evt) {
 });
 
 
-
-function URIHelper(href) {
-    const obj = {};
-    obj.fullQuery = href.slice(href.lastIndexOf("/") + 1);
-    href.slice(href.lastIndexOf("/") + 1).split("&").forEach(item => {
-        obj[item.split("=")[0]] = item.split("=")[1];
-    });
-    return obj;
-}
-
-
-function createElem({tagName, classNameArray = [], innerText = ""} = {}) {
-    const elem = document.createElement(tagName);
-    classNameArray.length > 0 ? elem.classList.add(...classNameArray) : null;
-    elem.classList.add(...classNameArray);
-    innerText !== "" ? elem.innerText = innerText : null;
-    return elem;
-}
+const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
 
 async function renderTable(evt) {
@@ -724,6 +732,8 @@ async function renderTable(evt) {
     const href = URIHelper(this.href);
     renderTableRecords(href).then();
 }
+
+
 
 
 async function deleteItem(evt) {
@@ -745,9 +755,84 @@ async function deleteItem(evt) {
 }
 
 
-async function renderTableRecords(href) {
+async function editItem (evt) {
+    evt.preventDefault();
+    const href = URIHelper(this.href);
+    
+    const request = await Request.sendRequest(`table=${href.table}&id=${href.id}`, {
+        method: "GET",
+        headers: {
+            "Delete": "Yes"
+        }
+    });
+    
+    const parsedRequest = JSON.parse(request);
+    rootOfRecords.innerHTML = "";
+    rootOfRecords.append(renderItemEdit(parsedRequest, href));
+}
 
-    const rootOfRecords = document.querySelector(".admin__records-wrapper");
+
+async function submitEditRecord(evt) {
+
+    const href = JSON.parse(this.dataset.href);
+
+    const formData = new FormData(this.form);
+    formData.append("table", href.table);
+    formData.append("id", href.id);
+
+    const request = await Request.sendRequest(`table=${href.table}&id=${href.id}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+            "Edit": "Yes"
+        }
+    });
+    renderTableRecords(href).then();
+}
+
+
+
+function renderItemEdit(parsedRequest, href) {
+    const divWrapper = createElem({tagName: "div", classNameArray: ["admin__form-wrapper"]});
+    //divWrapper.addEventListener("click", (evt) => evt.stopPropagation());
+    const form = createElem({tagName: "form", classNameArray: ["admin__new-elem-form"]});
+    form.addEventListener("submit", (evt) => evt.preventDefault());
+    form.name = "admin__elem-form";
+
+    const data = parsedRequest;
+
+    for (const item in data) {
+        const div = createElem({tagName: "div"});
+        const label = createElem({tagName: "label", innerText: item});
+        div.append(label);
+
+        const input = createElem({tagName: "input", classNameArray: ["admin__form-input"]});
+        input.type = "text";
+        input.name = `${item}`;
+        input.value = `${data[item]}`;
+        input.required = true;
+        div.append(input);
+        form.append(div);
+    }
+
+    //console.log("href", href);
+    
+    const submit = createElem({tagName: "input", classNameArray: ["admin__form-submit"]});
+    submit.type = "submit";
+    submit.name = "auth-submit";
+    submit.value = "Send";
+    submit.dataset.href = JSON.stringify(href);
+    submit.addEventListener("click", submitEditRecord, {once: true});
+
+    form.append(submit);
+    divWrapper.append(form);
+    return divWrapper;
+}
+
+
+
+
+async function renderTableRecords(href) {
     const request = await Request.sendRequest(`table=${href.table}`, {method: "GET"});
     const parsedRequest = JSON.parse(request);
 
@@ -765,7 +850,7 @@ async function renderTableRecords(href) {
 
         const ControlsBtnEdit = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__edit-item-btn"], innerText: "Edit"});
         ControlsBtnEdit.href = `table=${href.table}&action=edit&id=${item["id"]}`;
-        //ControlsBtnEdit.addEventListener("click", deleteItem, {once: true});
+        ControlsBtnEdit.addEventListener("click", editItem, {once: true});
         divControlsWrapper.append(ControlsBtnEdit);
 
         const ControlsBtnDelete = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__delete-item-btn"], innerText: "Delete"});
