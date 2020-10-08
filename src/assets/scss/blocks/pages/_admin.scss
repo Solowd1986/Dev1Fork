@@ -6,6 +6,7 @@
 
 .admin__list-of-sections {
   display: flex;
+  padding: 20px 10px;
   flex-wrap: wrap;
   justify-content: center;
 
@@ -35,6 +36,11 @@
 
 .admin__table {
 
+}
+
+
+.tables {
+  padding: 20px 15px;
 }
 
 .admin__add-item-btn {

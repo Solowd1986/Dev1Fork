@@ -420,9 +420,10 @@ class ModalComponent {
 
 
 
-const btnST = document.querySelector(".show-tables");
-const blockData = document.querySelector(".tables");
-const rootElem = document.querySelector(".admin__list-of-sections");
+
+const rootElem = document.querySelector(".db-responce-wrapper");
+const rootOfRecords = document.querySelector(".admin__records-wrapper");
+
 
 
 
@@ -431,7 +432,7 @@ rootElem.addEventListener("click", async function (evt) {
     //console.dir(evt.target);
 
     if (evt.target.href && evt.target.href.includes("tablename")) {
-        //console.log(evt.target.href);
+        console.log(evt.target.href);
 
         const request = await Request.sendRequest(`${evt.target.href.slice(evt.target.href.lastIndexOf("/") + 1)}`, {
             method: "GET"
@@ -441,10 +442,29 @@ rootElem.addEventListener("click", async function (evt) {
             //console.log(JSON.parse(request));
             const data = JSON.parse(request);
 
-            const tableTitle = document.querySelector(".admin__table-title");
-            const tableListOfElem = document.querySelector(".admin__list-of-records");
-            tableTitle.innerText = "Таблица: " + data.table;
+            rootOfRecords.innerHTML = "";
+
+            const tableName = evt.target.href.match(/tablename=(?<name>.*)/).groups.name;
+
+            const recordsAddBtn = document.createElement("a");
+            recordsAddBtn.classList.add("admin__btn", "admin__add-item-btn");
+            recordsAddBtn.href = `table=${tableName}&action=insert`;
+            recordsAddBtn.innerText = "Добавить новый элемент";
+            rootOfRecords.prepend(recordsAddBtn);
+
+
+            const recordsTableTitle = document.createElement("h3");
+            recordsTableTitle.classList.add("admin__table-title");
+            recordsTableTitle.innerText = "Таблица: " + data.table;
             delete data.table;
+            rootOfRecords.prepend(recordsTableTitle);
+
+
+
+            const tableListOfElem = document.createElement("ul");
+            tableListOfElem.classList.add("admin__list-of-records");
+
+            rootOfRecords.append(tableListOfElem);
 
             for (const item of Object.values(data)) {
 
@@ -459,15 +479,18 @@ rootElem.addEventListener("click", async function (evt) {
 
 
                 const divControlsWrapper = document.createElement("div");
+                divControlsWrapper.classList.add("admin__table-controls");
+
                 const ControlsBtnEdit = document.createElement("a");
                 const ControlsBtnDelete = document.createElement("a");
-                divControlsWrapper.classList.add("admin__table-controls");
                 ControlsBtnEdit.classList.add("admin__btn", "admin__edit-item-btn");
                 ControlsBtnDelete.classList.add("admin__btn", "admin__delete-item-btn");
                 ControlsBtnEdit.innerText = "Edit";
-                ControlsBtnEdit.href = "/dist/data.php?table=name&id=" + `${item["id"]}`;
+                ControlsBtnEdit.href = `table=${tableName}&id=${item["id"]}`;
                 ControlsBtnDelete.innerText = "Delete";
-                ControlsBtnDelete.href = "Delete";
+
+                ControlsBtnDelete.href = `table=${tableName}&id=${item["id"]}`;
+
                 divControlsWrapper.append(ControlsBtnEdit, ControlsBtnDelete);
                 li.append(divControlsWrapper);
                 // for (let i = 12; i--;) {
@@ -477,7 +500,7 @@ rootElem.addEventListener("click", async function (evt) {
             }
 
         } catch (e) {
-            console.log("error with get all tablees request", e.message);
+            console.log("error with get all tablees request", e.message + e.lineNumber);
         }
 
     }
@@ -486,6 +509,9 @@ rootElem.addEventListener("click", async function (evt) {
 }, true);
 
 
+const rt = document.querySelector(".db-responce-wrapper");
+const btnST = document.querySelector(".show-tables");
+//const rootElem = document.querySelector(".admin__list-of-sections");
 
 btnST.addEventListener("click", async function (evt) {
     evt.preventDefault();
@@ -494,16 +520,23 @@ btnST.addEventListener("click", async function (evt) {
     });
 
     try {
-
+        rootElem.innerHTML = "";
+        const ul = document.createElement("ul");
+        ul.classList.add("admin__list-of-sections");
         JSON.parse(request).forEach(item => {
+
+
             const li = document.createElement("li");
+
             const link = document.createElement("a");
             link.classList.add("admin__btn");
             link.innerText = item.TABLE_COMMENT;
-            link.href = `/tablename=${item.TABLE_NAME}`;
+            link.href = `tablename=${item.TABLE_NAME}`;
             li.append(link);
-            rootElem.appendChild(li);
+            ul.append(li);
         });
+        rootElem.append(ul);
+
     } catch (e) {
         console.log("error with get all tablees request", e.message);
     }

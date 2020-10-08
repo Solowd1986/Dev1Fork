@@ -5,18 +5,25 @@
     <main class="wrapper flex-grow-bottom content">
         <h2 class="admin__title">Панель администратора</h2>
 
-        <a class="show-tables" style="padding: 10px; display: inline-block; align-self: center; background-color: lightgrey" href="/tables">Вывести таблицы</a>
-
-        <div class="tables"></div>
-
-
-        <h3 class="admin__sections-title">Доступные разделы</h3>
+        <a class="show-tables" style="padding: 10px; display: inline-block; align-self: center; background-color: lightgrey" href="tables">Вывести таблицы</a>
+        <div class="db-responce-wrapper"></div>
         <ul class="admin__list-of-sections"></ul>
+        <div class="admin__records-wrapper"></div>
 
 
-        <h3 class="admin__table-title">Таблица: пользователи</h3>
-        <button class="admin__btn admin__add-item-btn">Добавить новый элемент</button>
-        <ul class="admin__list-of-records">
+        <!--            <div class="admin__form-wrapper"></div>-->
+
+
+
+
+<!--        <h3 class="admin__sections-title">Доступные разделы</h3>-->
+
+
+
+<!--        <button class="admin__btn admin__add-item-btn">Добавить новый элемент</button>-->
+
+
+
 <!--            <li>-->
 <!--                <p class="admin__field-record">Ttile</p>-->
 <!--                <p class="admin__field-record">Desc</p>-->
@@ -25,29 +32,29 @@
 <!--                    <button class="admin__btn admin__delete-item-btn">Delete</button>-->
 <!--                </div>-->
 <!--            </li>-->
-        </ul>
 
 
-        <div class="admin__form-wrapper">
-            <h3 class="admin__title-of-element">Новый элемент</h3>
-            <form class="admin__new-elem-form" action="/" name="admin__elem-form" method="POST">
-                <div>
-                    <label for=""> Имя пользователя</label>
-                    <input class="admin__form-input" type="text" name="elem1" required>
-                </div>
 
-                <div>
-                    <label for=""> Адрес пользователя</label>
-                    <input class="admin__form-input" type="text" name="elem2" required>
-                </div>
+<!--        <div class="admin__form-wrapper">-->
+<!--            <h3 class="admin__title-of-element">Новый элемент</h3>-->
+<!--            <form class="admin__new-elem-form" action="/" name="admin__elem-form" method="POST">-->
+<!--                <div>-->
+<!--                    <label for=""> Имя пользователя</label>-->
+<!--                    <input class="admin__form-input" type="text" name="elem1" required>-->
+<!--                </div>-->
 
-                <div class="admin__form-file">
-                    <label for=""> Загружаемый файл</label>
-                    <input class="" type="file" name="file">
-                </div>
-                <input class="admin__form-submit" type="submit" name="auth-submit" value="Send">
-            </form>
-        </div>
+<!--                <div>-->
+<!--                    <label for=""> Адрес пользователя</label>-->
+<!--                    <input class="admin__form-input" type="text" name="elem2" required>-->
+<!--                </div>-->
+
+<!--                <div class="admin__form-file">-->
+<!--                    <label for=""> Загружаемый файл</label>-->
+<!--                    <input class="" type="file" name="file">-->
+<!--                </div>-->
+<!--                <input class="admin__form-submit" type="submit" name="auth-submit" value="Send">-->
+<!--            </form>-->
+<!--        </div>-->
 
 
     </main>
