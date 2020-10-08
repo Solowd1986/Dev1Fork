@@ -396,8 +396,6 @@ if (exitBtn && bresp) {
 
 
 
-
-
 class ModalComponent {
     constructor(modalOptions) {
         this.options = modalOptions;
@@ -416,11 +414,6 @@ class ModalComponent {
         parentElement.append(elemOverlay);
     }
 }
-
-
-
-
-
 
 
 
@@ -445,8 +438,6 @@ class Delete {
 
 
 }
-
-
 
 
 class Edit {
@@ -555,10 +546,10 @@ const wrp = document.querySelector(".wrp");
 
 
 
-const rootElem = document.querySelector(".db-responce-wrapper");
-const rootOfRecords = document.querySelector(".admin__records-wrapper");
+const rootElem = document.querySelector("div");
 
-rootElem.addEventListener("click", async function (evt) {
+
+rootElem.addEventListener("clic1k", async function (evt) {
     evt.preventDefault();
     //console.dir(evt.target);
 
@@ -680,7 +671,10 @@ rootElem.addEventListener("click", async function (evt) {
 
 
 
+
+
 const showTablesBtn = document.querySelector(".show-tables");
+const listOfTables = document.querySelector(".admin__list-of-sections");
 showTablesBtn.addEventListener("click", async function (evt) {
     evt.preventDefault();
     const request = await Request.sendRequest(`${evt.target.href.slice(evt.target.href.lastIndexOf("/") + 1)}`, {
@@ -688,24 +682,104 @@ showTablesBtn.addEventListener("click", async function (evt) {
     });
 
     try {
-        rootElem.innerHTML = "";
-        const ul = document.createElement("ul");
-        ul.classList.add("admin__list-of-sections");
+        listOfTables.innerHTML = "";
         JSON.parse(request).forEach(item => {
             const li = document.createElement("li");
             const link = document.createElement("a");
+            link.addEventListener("click", renderTable);
             link.classList.add("admin__btn");
             link.innerText = item.TABLE_COMMENT;
-            link.href = `tablename=${item.TABLE_NAME}`;
+            link.href = `table=${item.TABLE_NAME}`;
             li.append(link);
-            ul.append(li);
+            listOfTables.append(li);
         });
-        rootElem.append(ul);
     } catch (e) {
-        console.dir(e);
         console.log("error with get all tablees request", e.message);
     }
 });
+
+
+
+function URIHelper(href) {
+    const obj = {};
+    obj.fullQuery = href.slice(href.lastIndexOf("/") + 1);
+    href.slice(href.lastIndexOf("/") + 1).split("&").forEach(item => {
+        obj[item.split("=")[0]] = item.split("=")[1];
+    });
+    return obj;
+}
+
+
+function createElem({tagName, classNameArray = [], innerText = ""} = {}) {
+    const elem = document.createElement(tagName);
+    classNameArray.length > 0 ? elem.classList.add(...classNameArray) : null;
+    elem.classList.add(...classNameArray);
+    innerText !== "" ? elem.innerText = innerText : null;
+    return elem;
+}
+
+
+async function renderTable(evt) {
+    evt.preventDefault();
+    const href = URIHelper(this.href);
+    renderTableRecords(href).then();
+}
+
+
+async function deleteItem(evt) {
+    evt.preventDefault();
+    const href = URIHelper(this.href);
+
+    const formData = new FormData();
+    formData.append("table", href.table);
+    formData.append("id", href.id);
+    const options = {
+        method: "POST",
+        body: formData,
+        headers: {
+            "Request-Type" : "Record-Delete"
+        }
+    };
+    const responce = await Request.sendRequest("/", options);
+    renderTableRecords(href).then();
+}
+
+
+async function renderTableRecords(href) {
+
+    const rootOfRecords = document.querySelector(".admin__records-wrapper");
+    const request = await Request.sendRequest(`table=${href.table}`, {method: "GET"});
+    const parsedRequest = JSON.parse(request);
+
+    rootOfRecords.innerHTML = "";
+    const ul = createElem({tagName:"ul", classNameArray: ["admin__list-of-records"]});
+    rootOfRecords.append(ul);
+
+    parsedRequest.forEach(item => {
+        const li = createElem({tagName: "li"});
+        for (const prop in item) {
+            const p = createElem({tagName: "p", classNameArray: ["admin__field-record"], innerText: `${prop} : ${item[prop]}`});
+            li.append(p);
+        }
+        const divControlsWrapper = createElem({tagName: "div", classNameArray: ["admin__table-controls"]});
+
+        const ControlsBtnEdit = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__edit-item-btn"], innerText: "Edit"});
+        ControlsBtnEdit.href = `table=${href.table}&action=edit&id=${item["id"]}`;
+        //ControlsBtnEdit.addEventListener("click", deleteItem, {once: true});
+        divControlsWrapper.append(ControlsBtnEdit);
+
+        const ControlsBtnDelete = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__delete-item-btn"], innerText: "Delete"});
+        ControlsBtnDelete.href = `table=${href.table}&action=delete&id=${item["id"]}`;
+        ControlsBtnDelete.addEventListener("click", deleteItem, {once: true});
+        divControlsWrapper.append(ControlsBtnDelete);
+
+        li.append(divControlsWrapper);
+        ul.append(li);
+    });
+}
+
+
+
 
 
 
@@ -841,6 +915,7 @@ class Request {
                         : response.statusText}`);
                 });
             } else {
+
                 return response.text();
             }
         });

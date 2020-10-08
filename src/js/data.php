@@ -142,9 +142,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         print json_encode($res);
     }
 
-    if (array_key_exists('tablename', $_GET)) {
-        $res = DbQueryCore::getAll($_GET["tablename"]);
-        $res["table"] = DbQueryCore::getTableName($_GET["tablename"]);
+    if (array_key_exists('table', $_GET)) {
+        $res = DbQueryCore::getAll($_GET["table"]);
         print json_encode($res);
     }
 
