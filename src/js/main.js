@@ -429,6 +429,29 @@ const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
 
 
+class Delete {
+
+    static async formHandler(id, table) {
+        const formData = new FormData();
+        formData.append("table", table);
+        formData.append("id", id);
+        const options = {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Request-Type" : "Record-Delete"
+            }
+        };
+        const responce = await Request.sendRequest("/", options);
+        console.dir(responce);
+    }
+
+
+}
+
+
+
+
 class Edit {
     constructor (parent, target, data) {
         this.parent = parent;
@@ -466,7 +489,6 @@ class Edit {
                 }
             };
             const responce = await Request.sendRequest("/", options);
-
             console.dir(responce);
         });
     }
@@ -569,11 +591,11 @@ rootElem.addEventListener("click", async function (evt) {
                     }
 
                     if (href.action === "delete") {
+                        Delete.formHandler(href.id, href.table);
                         console.log("delete");
                     }
 
                 }
-
             });
 
 

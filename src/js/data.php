@@ -58,8 +58,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         DbQueryCore::update($id, $table, $_POST);
         print json_encode($_POST);
-
     }
+
+    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Delete") {
+
+        //print $_POST["text"];
+        $id = $_POST['id'];
+        $table = $_POST['table'];
+
+        DbQueryCore::delete($table, $id);
+        print json_encode($_POST);
+    }
+
+
+
+
     if (isset(getallheaders()["Token-Status"])) {
         $token = $_POST["token"];
 
