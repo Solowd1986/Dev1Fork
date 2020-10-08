@@ -2,6 +2,7 @@
 import "normalize.css";
 import "../assets/scss/main.scss";
 import "@babel/polyfill";
+import formHandler from "./components/modules/form/formHandler";
 
 
 require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
@@ -422,41 +423,62 @@ class ModalComponent {
 
 
 const rootElem = document.querySelector(".db-responce-wrapper");
+
 const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
-rootOfRecords.addEventListener("click", function (evt) {
-    evt.preventDefault();
-    console.dir(evt.target.href);
 
 
-
-}, true);
-
-
-
-class ListOfRecords {
-
-
-    render() {
-
-    }
-
-}
 
 class Edit {
-
-    constructor (parent, data) {
+    constructor (parent, target, data) {
         this.parent = parent;
-        this.data = data;
+        this.target = this.URIHelper(target);
+        this.data = this.dataIdHelper(data);
+    }
+
+    dataIdHelper(data) {
+        for (const item of Object.values(data)) {
+            if (item.id === parseInt(this.target.id)) {
+                return item;
+            }
+        }
+    }
+
+    URIHelper(uri) {
+        const obj = {};
+        uri.slice(uri.lastIndexOf("/") + 1).split("&").forEach(item => {
+            obj[item.split("=")[0]] = item.split("=")[1];
+        });
+        return obj;
+    }
+
+    formHandler(elem) {
+        elem.addEventListener("click", async function (evt) {
+            const formData = new FormData(form);
+            const options = {
+                method: "POST",
+                data: formData,
+                headers: {
+                    "Request-Type" : "Record-Edit"
+                }
+            };
+            const responce = await Request.sendRequest("", options);
+        });
     }
 
     render() {
-        this.parent.classList.add("admin__form-wrapper");
+        const divWrapper = document.createElement("div");
+        divWrapper.classList.add("admin__form-wrapper");
+
+        divWrapper.addEventListener("click", function (evt) {
+            evt.stopPropagation();
+        });
+
 
         const h3 = document.createElement("h3");
         h3.classList.add("admin__title-of-element");
         h3.innerText = "Новый элемент";
-        this.parent.append(h3);
+        divWrapper.append(h3);
 
         const form = document.createElement("form");
         form.classList.add("admin__new-elem-form");
@@ -488,13 +510,16 @@ class Edit {
         submit.name = "auth-submit";
         submit.value = "Send";
 
+        this.formHandler(submit);
+
         form.append(submit);
 
         form.addEventListener("submit", function (evt) {
             evt.preventDefault();
 
         });
-        this.parent.append(form);
+        divWrapper.append(form);
+        this.parent.append(divWrapper);
     }
 }
 
@@ -502,36 +527,7 @@ class Edit {
 const dataSet = {name: "bob", id: 12};
 const wrp = document.querySelector(".wrp");
 
-
-new Edit(wrp, dataSet).render();
-
-
-
-
-// <div class="admin__form-wrapper">
-//     <h3 class="admin__title-of-element">Новый элемент</h3>
-// <form class="admin__new-elem-form" action="/" name="admin__elem-form" method="POST">
-//     <div>
-//     <label for=""> Имя пользователя</label>
-// <input class="admin__form-input" type="text" name="elem1" required>
-// </div>
-//
-// <div>
-// <label for=""> Адрес пользователя</label>
-// <input class="admin__form-input" type="text" name="elem2" required>
-// </div>
-//
-// <div class="admin__form-file">
-//     <label for=""> Загружаемый файл</label>
-// <input class="" type="file" name="file">
-//     </div>
-//     <input class="admin__form-submit" type="submit" name="auth-submit" value="Send">
-//     </form>
-//     </div>
-
-
-
-
+// new Edit(wrp, "", dataSet).render();
 
 
 
@@ -550,36 +546,55 @@ rootElem.addEventListener("click", async function (evt) {
         try {
             //console.log(JSON.parse(request));
             const data = JSON.parse(request);
-
             rootOfRecords.innerHTML = "";
 
+
+            rootOfRecords.addEventListener("click", function (evt) {
+                evt.preventDefault();
+                if (evt.target.href) {
+                    console.dir(evt.target.href);
+
+                    listOfElemWrapper.innerHTML = "";
+
+
+                    //console.log(data);
+
+                    //let singleItemData =
+
+                    new Edit(listOfElemWrapper, evt.target.href, data).render();
+                }
+
+            });
+
+
             const tableName = evt.target.href.match(/tablename=(?<name>.*)/).groups.name;
+
+
+
+            const recordsTableTitle = document.createElement("h3");
+            recordsTableTitle.classList.add("admin__table-title");
+            recordsTableTitle.innerText = "Таблица: " +  data.table;
+            delete data.table;
+
+            //rootOfRecords.prepend(recordsTableTitle);
+            rootOfRecords.prepend(recordsTableTitle);
+
+
+
+            const listOfElemWrapper = document.createElement("div");
+            const tableListOfElem = document.createElement("ul");
+            tableListOfElem.classList.add("admin__list-of-records");
+
 
             const recordsAddBtn = document.createElement("a");
             recordsAddBtn.classList.add("admin__btn", "admin__add-item-btn");
             recordsAddBtn.href = `table=${tableName}&action=insert`;
             recordsAddBtn.innerText = "Добавить новый элемент";
-
-            rootOfRecords.prepend(recordsAddBtn);
-
-
-            const recordsTableTitle = document.createElement("h3");
-            recordsTableTitle.classList.add("admin__table-title");
-            recordsTableTitle.innerText = "Таблица: " + data.table;
-            delete data.table;
-
-            //rootOfRecords.prepend(recordsTableTitle);
-
-            rootOfRecords.prepend(recordsTableTitle);
+            listOfElemWrapper.prepend(recordsAddBtn);
 
 
-
-            const tableListOfElem = document.createElement("ul");
-            tableListOfElem.classList.add("admin__list-of-records");
-
-            //rootOfRecords.append(tableListOfElem);
-            rootOfRecords.append(tableListOfElem);
-
+            listOfElemWrapper.append(tableListOfElem);
+            rootOfRecords.append(listOfElemWrapper);
 
             for (const item of Object.values(data)) {
 
@@ -601,6 +616,9 @@ rootElem.addEventListener("click", async function (evt) {
                 ControlsBtnEdit.classList.add("admin__btn", "admin__edit-item-btn");
                 ControlsBtnEdit.innerText = "Edit";
                 ControlsBtnEdit.href = `table=${tableName}&action=edit&id=${item["id"]}`;
+
+
+
 
 
                 const ControlsBtnDelete = document.createElement("a");
