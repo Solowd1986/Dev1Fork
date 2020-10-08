@@ -1,36 +1,36 @@
 
-
 .admin__title, .admin__table-title, .admin__title-of-element, .admin__sections-title {
   font-weight: 300;
 }
 
 
-
-
 .admin__list-of-sections {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  &>*:not(first-child) {
+  justify-content: center;
+
+  & > *:not(first-child) {
     margin-right: 10px;
   }
-
 }
+
 
 .admin__btn {
   padding: 5px 10px;
-  color: white;
-  background-color: red;
   font-size: 18px;
+  color: white;
   border-radius: 5px;
+  background-color: red;
   transition: all 0.3s ease;
 
   &:hover {
     border-radius: 8px;
     background-color: #de001e;
   }
+}
 
-
+.admin__delete-item-btn {
+  margin-left: 15px;
 }
 
 .admin__table {
@@ -42,30 +42,33 @@
 }
 
 
-
 .admin__list-of-records {
-
-  margin: 30px auto 30px;
-  max-width: 80%;
   display: flex;
   flex-wrap: wrap;
+  margin: 30px auto 30px;
 
 }
 
 
-
-
 .admin__list-of-records li {
-
+  min-width: 210px;
   padding: 10px 20px;
-  margin-right: 20px;
+  word-break: break-all;
+  @include generate-columns-for-item(3);
+  @media (max-width: 960px) {
+    @include generate-columns-for-item(4);
+  }
+  @media (max-width: 760px) {
+    @include generate-columns-for-item(6);
+  }
+
 
   border: 1px solid lightgrey;
+  -moz-box-shadow: 10px 10px 22px -12px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 10px 10px 22px -12px rgba(0, 0, 0, 0.75);
+  box-shadow: 10px 10px 22px -12px rgba(0, 0, 0, 0.75);
+  transition: all 0.4s linear;
 
-
-  -webkit-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
-  -moz-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
-  box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
 }
 
 
@@ -74,11 +77,10 @@
   flex-direction: column;
 
 
-
-  &>div:not(:last-child) {
-    margin-bottom: 20px;
+  & > div:not(:last-child) {
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
 
     & > label {
       padding-right: 15px;
@@ -91,17 +93,15 @@
 }
 
 
-
-
 .admin__form-wrapper {
-  border: 1px solid lightgrey;
-  padding: 20px;
   max-width: 70%;
   margin: 30px auto 30px;
+  padding: 20px;
+  border: 1px solid lightgrey;
 
-  -webkit-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
-  -moz-box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
-  box-shadow: 10px 10px 22px -12px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 22px -12px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 10px 10px 22px -12px rgba(0, 0, 0, 0.75);
+  box-shadow: 10px 10px 22px -12px rgba(0, 0, 0, 0.75);
 
 
 }
@@ -125,7 +125,7 @@
   display: flex;
   flex-direction: column;
 
-  &>* {
+  & > * {
     align-self: center;
     padding-bottom: 10px;
   }

@@ -93,6 +93,37 @@ class DbQueryCore extends DbConnect
     }
 
 
+    /*
+     * TABLE_COMMENT - данная запись в таблице содержит ее название, удобное для вывода в админ-панели.
+     * Для корректной работы, каждая нужная для вывода таблица должна иметь заполненное поле Comment
+     */
+    public static function getAllTablesNames()
+    {
+        $sql = "SELECT TABLE_COMMENT, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'site'";
+
+        try {
+            $pdo = \php\db\DbConnect::exec()->prepare($sql);
+            $pdo->execute();
+            return $pdo->fetchAll();
+        } catch (\Exception $e) {
+            return \php\helpers\Output::show("Ошибка при операции getAll " . $e->getMessage());
+        }
+    }
+
+    public static function getTableName($table)
+    {
+        $sql = "SELECT TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '$table' AND TABLE_SCHEMA = 'site'";
+
+        try {
+            $pdo = \php\db\DbConnect::exec()->prepare($sql);
+            $pdo->execute();
+            return $pdo->fetchColumn();
+        } catch (\Exception $e) {
+            return \php\helpers\Output::show("Ошибка при операции getAll " . $e->getMessage());
+        }
+    }
+
+
     public static function getAll($table)
     {
         try {

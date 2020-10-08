@@ -356,41 +356,45 @@ const bresp = document.querySelector(".get-data");
 const exitBtn = document.querySelector(".exit-data");
 const answer = document.querySelector(".resp");
 
+if (exitBtn && bresp) {
+    exitBtn.addEventListener("click", function (evt) {
+        if (localStorage.getItem("token-key")) {
+            localStorage.removeItem("token-key");
+        }
+    });
+    bresp.addEventListener("click", async function (evt) {
+        if (localStorage.getItem("token-key")) {
 
-exitBtn.addEventListener("click", function (evt) {
-    if (localStorage.getItem("token-key")) {
-        localStorage.removeItem("token-key");
-    }
-});
-
-
-
-
-bresp.addEventListener("click", async function (evt) {
-    if (localStorage.getItem("token-key")) {
-
-        const reg = LocalStorageHelper.getItem("token-key");
-        const ans = await UserAuth.tokenResponce(reg);
+            const reg = LocalStorageHelper.getItem("token-key");
+            const ans = await UserAuth.tokenResponce(reg);
 
 
-        if (UserAuth.decodeSignedData(ans).allowed) {
-            if (UserAuth.decodeSignedData(ans)["has-expired"]) {
-                localStorage.removeItem("token-key");
-                console.log("token has removed like expired");
+            if (UserAuth.decodeSignedData(ans).allowed) {
+                if (UserAuth.decodeSignedData(ans)["has-expired"]) {
+                    localStorage.removeItem("token-key");
+                    console.log("token has removed like expired");
+                } else {
+                    console.log(UserAuth.decodeSignedData(ans));
+                    const data = UserAuth.decodeSignedData(reg);
+                    console.dir(data);
+                    answer.innerText = data.login;
+                }
             } else {
-                console.log(UserAuth.decodeSignedData(ans));
-                const data = UserAuth.decodeSignedData(reg);
-                console.dir(data);
-                answer.innerText = data.login;
+                localStorage.removeItem("token-key");
+                answer.innerText = "User not auth";
             }
         } else {
-            localStorage.removeItem("token-key");
             answer.innerText = "User not auth";
         }
-    } else {
-        answer.innerText = "User not auth";
-    }
-});
+    });
+
+
+}
+
+
+
+
+
 
 
 class ModalComponent {
@@ -415,6 +419,106 @@ class ModalComponent {
 
 
 
+
+const btnST = document.querySelector(".show-tables");
+const blockData = document.querySelector(".tables");
+const rootElem = document.querySelector(".admin__list-of-sections");
+
+
+
+rootElem.addEventListener("click", async function (evt) {
+    evt.preventDefault();
+    //console.dir(evt.target);
+
+    if (evt.target.href && evt.target.href.includes("tablename")) {
+        //console.log(evt.target.href);
+
+        const request = await Request.sendRequest(`${evt.target.href.slice(evt.target.href.lastIndexOf("/") + 1)}`, {
+            method: "GET"
+        });
+
+        try {
+            //console.log(JSON.parse(request));
+            const data = JSON.parse(request);
+
+            const tableTitle = document.querySelector(".admin__table-title");
+            const tableListOfElem = document.querySelector(".admin__list-of-records");
+            tableTitle.innerText = "Таблица: " + data.table;
+            delete data.table;
+
+            for (const item of Object.values(data)) {
+
+                const li = document.createElement("li");
+
+                for (const prop in item) {
+                    const p = document.createElement("p");
+                    p.classList.add("admin__field-record");
+                    p.innerText = `${prop} : ${item[prop]}`;
+                    li.append(p);
+                }
+
+
+                const divControlsWrapper = document.createElement("div");
+                const ControlsBtnEdit = document.createElement("a");
+                const ControlsBtnDelete = document.createElement("a");
+                divControlsWrapper.classList.add("admin__table-controls");
+                ControlsBtnEdit.classList.add("admin__btn", "admin__edit-item-btn");
+                ControlsBtnDelete.classList.add("admin__btn", "admin__delete-item-btn");
+                ControlsBtnEdit.innerText = "Edit";
+                ControlsBtnEdit.href = "/dist/data.php?table=name&id=" + `${item["id"]}`;
+                ControlsBtnDelete.innerText = "Delete";
+                ControlsBtnDelete.href = "Delete";
+                divControlsWrapper.append(ControlsBtnEdit, ControlsBtnDelete);
+                li.append(divControlsWrapper);
+                // for (let i = 12; i--;) {
+                //     tableListOfElem.appendChild(li.cloneNode(true));
+                // }
+                tableListOfElem.appendChild(li);
+            }
+
+        } catch (e) {
+            console.log("error with get all tablees request", e.message);
+        }
+
+    }
+
+
+}, true);
+
+
+
+btnST.addEventListener("click", async function (evt) {
+    evt.preventDefault();
+    const request = await Request.sendRequest(`${evt.target.href.slice(evt.target.href.lastIndexOf("/") + 1)}`, {
+        method: "GET"
+    });
+
+    try {
+
+        JSON.parse(request).forEach(item => {
+            const li = document.createElement("li");
+            const link = document.createElement("a");
+            link.classList.add("admin__btn");
+            link.innerText = item.TABLE_COMMENT;
+            link.href = `/tablename=${item.TABLE_NAME}`;
+            li.append(link);
+            rootElem.appendChild(li);
+        });
+    } catch (e) {
+        console.log("error with get all tablees request", e.message);
+    }
+}, true);
+
+
+
+
+
+
+
+
+
+
+
 class UserAuth {
     static decodeSignedData(str) {
         return JSON.parse(window.atob(str.substr(0, str.indexOf("|"))));
@@ -432,16 +536,23 @@ class UserAuth {
 
     static formHandler(form) {
         if (form !== null && form.nodeType === 1 && form.nodeName === "FORM") {
-            const formDataSet = new FormData(form);
-            const options = {method: "POST", body: formDataSet, headers: {
-                    'Data-Type': 'fetch/form-data',
-                }};
-
             form.addEventListener("submit", async function (evt) {
                 evt.preventDefault();
 
+                const formDataSet = new FormData(evt.target);
+                const options = {method: "POST", body: formDataSet, headers: {
+                        'Data-Type': 'fetch/form-data',
+                    }};
+
+
                 try {
+                    if (!Request.hasPersistentHeader("dame")) {
+                        Request.definePersistentHeaders({dame: "next"},options)
+                    }
+
                     const responce = await Request.sendRequest(form.action.match(/\..*?(?<action>\/.*)/).groups.action, options);
+
+
 
                     const div = document.querySelector(".result");
 
@@ -454,8 +565,8 @@ class UserAuth {
                     
                     console.log(UserAuth.decodeSignedData(responce));
 
-                    const ch2 = await UserAuth.tokenResponce(responce);
-                    console.dir(ch2);
+                    //const ch2 = await UserAuth.tokenResponce(responce);
+                    //console.dir(ch2);
 
                 } catch (e) {
                     console.log("error when request to form:" ,e);
@@ -473,21 +584,53 @@ UserAuth.formHandler(document.querySelector(".form"));
 
 
 
+
+
 class Request {
+
+    static persistentHeaders = {};
+
+    static definePersistentHeaders(headers, options) {
+        for (const item in headers) {
+            this.persistentHeaders[item] = headers[item];
+        }
+    }
+
+    static hasPersistentHeader(headerName) {
+        return headerName in this.persistentHeaders;
+    }
+
 
     static sendRequest(url, options) {
 
         // Выносим сюда авторизацию, то есть каждый запрос отправит такой заголовок. Добавляем обьекту options обьект headers, на случай, если
         // запрос заголовков вообще не передал. Это чтоб пустому обьекту не присвоить заголовок.
+
         if (!('headers' in options)) {
           options.headers = {};
         }
-        options.headers.authUser = "dsferewqrwer";
+
+        if (this.persistentHeaders) {
+            for (const item in this.persistentHeaders) {
+                options.headers[item] = this.persistentHeaders[item];
+            }
+        }
+
+        //options.headers.authUser = "dsferewqrwer";
+
 
         let controller = new AbortController();
         setTimeout(() => controller.abort(), 4000);
         options.signal = controller.signal;
 
+        /**
+         * Тут исходим из того, что в url параметр передали /, при этом в href может быть что-то другое,
+         * это нужно проверять на стороне запроса их функции
+         * @type {string}
+         */
+        url = url === "/" ? "/dist/data.php" : "/dist/data.php?" + url;
+
+        
         return fetch(url, options).then(response => {
             if (!response.ok) {
                 return response.text().then(error => {

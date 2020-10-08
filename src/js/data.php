@@ -24,11 +24,11 @@ require_once realpath('php/functions/functions.php');
 */
 
 
-use http\Client\Curl\User;
+
 use \php\auth\helpers\UserToken as UserToken;
 use \php\auth\UserRegistration as UserRegistration;
 use \php\auth\helpers\DataSanitizeHelper as DataSanitizeHelper;
-
+use \php\db\DbQueryCore;
 
 
 $passedData = [
@@ -65,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             //var_dump_pre("Token wrong");
         }
     }
-
 
     if (isset(getallheaders()["Data-Type"])) {
 
@@ -115,19 +114,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
+    if (array_key_exists('tables', $_GET)) {
+        $res = DbQueryCore::getAllTablesNames();
+        print json_encode($res);
+    }
+
+    if (array_key_exists('tablename', $_GET)) {
+        $res = DbQueryCore::getAll($_GET["tablename"]);
+        $res["table"] = DbQueryCore::getTableName($_GET["tablename"]);
+        print json_encode($res);
+    }
+
+
     if (isset(getallheaders()["User-Exit"])) {
         $name = getallheaders()["User-Exit"];
         setcookie($name, "", time() - 3600, "/");
     }
 
-
-    if (array_key_exists('id', $_GET)) {
-        print json_encode(array_merge(["responce" => true], apache_request_headers()));
-    } else {
-
-        print json_encode(array_merge(["responce" => true], apache_request_headers()));
-
-    }
 }
 
 

@@ -4,8 +4,8 @@
 */
 
 @mixin wrapper-negative-margins($margin: 15) {
-  margin-left: -$margin#{px};
-  margin-right: -$margin#{px};
+  margin-left: -$margin + px;
+  margin-right: -$margin + px;
 }
 
 /*  Генеринруем свойства для нужного количества элементов, сочетается с медиа-запросами.
@@ -19,9 +19,9 @@
 
 @mixin generate-columns-for-item($item-columns, $columns: 12, $offset: 30, $margin-bottom: 20) {
   width: calc(100% / #{$columns} * #{$item-columns} - #{$offset}#{px});
-  margin-left: $offset/2#{px};
-  margin-right: $offset/2#{px};
-  margin-bottom: $margin-bottom#{px};
+  margin-left: $offset/2 + px;
+  margin-right: $offset/2 + px;
+  margin-bottom: $margin-bottom + px;
 }
 
 

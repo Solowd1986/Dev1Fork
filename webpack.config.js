@@ -76,18 +76,17 @@ module.exports = {
             template: path.resolve(__dirname, 'src/tpl/index.hbs'), // Плагин, для обработки файлов с расширением hbs
             templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
         }),
-        new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
+        new HtmlWebpackPlugin({  // Генерируем любые другие файлы html, первым выше, по-умолчанию, будет index.html
             filename: 'page.html',
             template: path.resolve(__dirname, 'src/tpl/page.hbs'),
             templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
-
         }),
-        new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
+        new HtmlWebpackPlugin({  // Генерируем любые другие файлы html, первым выше, по-умолчанию, будет index.html
             filename: '404.html',
             template: path.resolve(__dirname, 'src/tpl/404.hbs'),
             templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
         }),
-        new HtmlWebpackPlugin({  // Генерируем любын другие файлы html, первым выше, по-умолчанию, будет index.html
+        new HtmlWebpackPlugin({  // Генерируем любые другие файлы html, первым выше, по-умолчанию, будет index.html
             filename: 'admin.html',
             template: path.resolve(__dirname, 'src/tpl/admin.hbs'),
             templateParameters:require(path.resolve(__dirname, "src/js/data.json"))
