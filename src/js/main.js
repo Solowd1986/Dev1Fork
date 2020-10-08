@@ -424,6 +424,115 @@ class ModalComponent {
 const rootElem = document.querySelector(".db-responce-wrapper");
 const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
+rootOfRecords.addEventListener("click", function (evt) {
+    evt.preventDefault();
+    console.dir(evt.target.href);
+
+
+
+}, true);
+
+
+
+class ListOfRecords {
+
+
+    render() {
+
+    }
+
+}
+
+class Edit {
+
+    constructor (parent, data) {
+        this.parent = parent;
+        this.data = data;
+    }
+
+    render() {
+        this.parent.classList.add("admin__form-wrapper");
+
+        const h3 = document.createElement("h3");
+        h3.classList.add("admin__title-of-element");
+        h3.innerText = "Новый элемент";
+        this.parent.append(h3);
+
+        const form = document.createElement("form");
+        form.classList.add("admin__new-elem-form");
+        form.name = "admin__elem-form";
+
+
+        for (const item in this.data) {
+            const div = document.createElement("div");
+
+            const label = document.createElement("label");
+            label.innerText = item;
+            div.append(label);
+
+            const input = document.createElement("input");
+            input.classList.add("admin__form-input");
+            input.type = "text";
+            input.name = `${item}`;
+            input.value = `${this.data[item]}`;
+            input.required = true;
+            div.append(input);
+            form.append(div);
+
+        }
+
+
+        const submit = document.createElement("input");
+        submit.classList.add("admin__form-submit");
+        submit.type = "submit";
+        submit.name = "auth-submit";
+        submit.value = "Send";
+
+        form.append(submit);
+
+        form.addEventListener("submit", function (evt) {
+            evt.preventDefault();
+
+        });
+        this.parent.append(form);
+    }
+}
+
+
+const dataSet = {name: "bob", id: 12};
+const wrp = document.querySelector(".wrp");
+
+
+new Edit(wrp, dataSet).render();
+
+
+
+
+// <div class="admin__form-wrapper">
+//     <h3 class="admin__title-of-element">Новый элемент</h3>
+// <form class="admin__new-elem-form" action="/" name="admin__elem-form" method="POST">
+//     <div>
+//     <label for=""> Имя пользователя</label>
+// <input class="admin__form-input" type="text" name="elem1" required>
+// </div>
+//
+// <div>
+// <label for=""> Адрес пользователя</label>
+// <input class="admin__form-input" type="text" name="elem2" required>
+// </div>
+//
+// <div class="admin__form-file">
+//     <label for=""> Загружаемый файл</label>
+// <input class="" type="file" name="file">
+//     </div>
+//     <input class="admin__form-submit" type="submit" name="auth-submit" value="Send">
+//     </form>
+//     </div>
+
+
+
+
+
 
 
 
@@ -432,7 +541,7 @@ rootElem.addEventListener("click", async function (evt) {
     //console.dir(evt.target);
 
     if (evt.target.href && evt.target.href.includes("tablename")) {
-        console.log(evt.target.href);
+        //console.log(evt.target.href);
 
         const request = await Request.sendRequest(`${evt.target.href.slice(evt.target.href.lastIndexOf("/") + 1)}`, {
             method: "GET"
@@ -450,6 +559,7 @@ rootElem.addEventListener("click", async function (evt) {
             recordsAddBtn.classList.add("admin__btn", "admin__add-item-btn");
             recordsAddBtn.href = `table=${tableName}&action=insert`;
             recordsAddBtn.innerText = "Добавить новый элемент";
+
             rootOfRecords.prepend(recordsAddBtn);
 
 
@@ -457,6 +567,9 @@ rootElem.addEventListener("click", async function (evt) {
             recordsTableTitle.classList.add("admin__table-title");
             recordsTableTitle.innerText = "Таблица: " + data.table;
             delete data.table;
+
+            //rootOfRecords.prepend(recordsTableTitle);
+
             rootOfRecords.prepend(recordsTableTitle);
 
 
@@ -464,7 +577,9 @@ rootElem.addEventListener("click", async function (evt) {
             const tableListOfElem = document.createElement("ul");
             tableListOfElem.classList.add("admin__list-of-records");
 
+            //rootOfRecords.append(tableListOfElem);
             rootOfRecords.append(tableListOfElem);
+
 
             for (const item of Object.values(data)) {
 
@@ -481,23 +596,28 @@ rootElem.addEventListener("click", async function (evt) {
                 const divControlsWrapper = document.createElement("div");
                 divControlsWrapper.classList.add("admin__table-controls");
 
+
                 const ControlsBtnEdit = document.createElement("a");
-                const ControlsBtnDelete = document.createElement("a");
                 ControlsBtnEdit.classList.add("admin__btn", "admin__edit-item-btn");
-                ControlsBtnDelete.classList.add("admin__btn", "admin__delete-item-btn");
                 ControlsBtnEdit.innerText = "Edit";
-                ControlsBtnEdit.href = `table=${tableName}&id=${item["id"]}`;
+                ControlsBtnEdit.href = `table=${tableName}&action=edit&id=${item["id"]}`;
+
+
+                const ControlsBtnDelete = document.createElement("a");
+                ControlsBtnDelete.classList.add("admin__btn", "admin__delete-item-btn");
+                ControlsBtnDelete.href = `table=${tableName}&action=delete&id=${item["id"]}`;
                 ControlsBtnDelete.innerText = "Delete";
 
-                ControlsBtnDelete.href = `table=${tableName}&id=${item["id"]}`;
+
 
                 divControlsWrapper.append(ControlsBtnEdit, ControlsBtnDelete);
                 li.append(divControlsWrapper);
                 // for (let i = 12; i--;) {
                 //     tableListOfElem.appendChild(li.cloneNode(true));
                 // }
-                tableListOfElem.appendChild(li);
+                tableListOfElem.append(li);
             }
+
 
         } catch (e) {
             console.log("error with get all tablees request", e.message + e.lineNumber);
