@@ -422,9 +422,6 @@ class ModalComponent {
 
 
 
-const rootElem = document.querySelector(".db-responce-wrapper");
-
-const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
 
 
@@ -558,6 +555,8 @@ const wrp = document.querySelector(".wrp");
 
 
 
+const rootElem = document.querySelector(".db-responce-wrapper");
+const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
 rootElem.addEventListener("click", async function (evt) {
     evt.preventDefault();
@@ -591,12 +590,16 @@ rootElem.addEventListener("click", async function (evt) {
                     }
 
                     if (href.action === "delete") {
-                        Delete.formHandler(href.id, href.table);
+                        //Delete.formHandler(href.id, href.table);
                         console.log("delete");
                     }
 
+                    if (href.action === "insert") {
+                        console.log("insert");
+                    }
+
                 }
-            });
+            }, {once: true});
 
 
             const tableName = evt.target.href.match(/tablename=(?<name>.*)/).groups.name;
@@ -672,18 +675,13 @@ rootElem.addEventListener("click", async function (evt) {
         } catch (e) {
             console.log("error with get all tablees request", e.message + e.lineNumber);
         }
-
     }
+}, {once: true});
 
 
-}, true);
 
-
-const rt = document.querySelector(".db-responce-wrapper");
-const btnST = document.querySelector(".show-tables");
-//const rootElem = document.querySelector(".admin__list-of-sections");
-
-btnST.addEventListener("click", async function (evt) {
+const showTablesBtn = document.querySelector(".show-tables");
+showTablesBtn.addEventListener("click", async function (evt) {
     evt.preventDefault();
     const request = await Request.sendRequest(`${evt.target.href.slice(evt.target.href.lastIndexOf("/") + 1)}`, {
         method: "GET"
@@ -694,10 +692,7 @@ btnST.addEventListener("click", async function (evt) {
         const ul = document.createElement("ul");
         ul.classList.add("admin__list-of-sections");
         JSON.parse(request).forEach(item => {
-
-
             const li = document.createElement("li");
-
             const link = document.createElement("a");
             link.classList.add("admin__btn");
             link.innerText = item.TABLE_COMMENT;
@@ -706,11 +701,15 @@ btnST.addEventListener("click", async function (evt) {
             ul.append(li);
         });
         rootElem.append(ul);
-
     } catch (e) {
+        console.dir(e);
         console.log("error with get all tablees request", e.message);
     }
-}, true);
+});
+
+
+
+
 
 
 
