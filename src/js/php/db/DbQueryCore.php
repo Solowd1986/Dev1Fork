@@ -27,7 +27,7 @@ class DbQueryCore extends DbConnect
         return \php\db\DbConnect::exec()->lastInsertId();
     }
 
-    public static function update($arrayUserData, $table, $id)
+    public static function update($id, $table, $arrayUserData)
     {
         $columns = [];
         $fields = [];
@@ -36,7 +36,7 @@ class DbQueryCore extends DbConnect
          * columns просто массив подстановок
          */
         foreach ($arrayUserData as $key => $value) {
-            if ($key !== 'id' && $key !== 'date') {
+            if ($key !== 'id' && $key !== 'date' && $key !== 'table') {
                 $fields[] = $key . "=:" . $key;
                 $columns[':' . $key] = $value;
             }

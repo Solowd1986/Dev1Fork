@@ -50,6 +50,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         print "empty arr\n";
     }
 
+    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Edit") {
+
+        //print $_POST["text"];
+        $id = $_POST['id'];
+        $table = $_POST['table'];
+
+        DbQueryCore::update($id, $table, $_POST);
+        print json_encode($_POST);
+
+    }
     if (isset(getallheaders()["Token-Status"])) {
         $token = $_POST["token"];
 

@@ -432,7 +432,7 @@ const rootOfRecords = document.querySelector(".admin__records-wrapper");
 class Edit {
     constructor (parent, target, data) {
         this.parent = parent;
-        this.target = this.URIHelper(target);
+        this.target = Edit.URIHelper(target);
         this.data = this.dataIdHelper(data);
     }
 
@@ -444,7 +444,7 @@ class Edit {
         }
     }
 
-    URIHelper(uri) {
+    static URIHelper(uri) {
         const obj = {};
         uri.slice(uri.lastIndexOf("/") + 1).split("&").forEach(item => {
             obj[item.split("=")[0]] = item.split("=")[1];
@@ -452,17 +452,22 @@ class Edit {
         return obj;
     }
 
-    formHandler(elem) {
+
+    formHandler(elem, table) {
         elem.addEventListener("click", async function (evt) {
-            const formData = new FormData(form);
+            evt.preventDefault();
+            const formData = new FormData(elem.form);
+            formData.append("table", table);
             const options = {
                 method: "POST",
-                data: formData,
+                body: formData,
                 headers: {
                     "Request-Type" : "Record-Edit"
                 }
             };
-            const responce = await Request.sendRequest("", options);
+            const responce = await Request.sendRequest("/", options);
+
+            console.dir(responce);
         });
     }
 
@@ -510,7 +515,7 @@ class Edit {
         submit.name = "auth-submit";
         submit.value = "Send";
 
-        this.formHandler(submit);
+        this.formHandler(submit, this.target.table);
 
         form.append(submit);
 
@@ -548,20 +553,25 @@ rootElem.addEventListener("click", async function (evt) {
             const data = JSON.parse(request);
             rootOfRecords.innerHTML = "";
 
-
             rootOfRecords.addEventListener("click", function (evt) {
                 evt.preventDefault();
                 if (evt.target.href) {
-                    console.dir(evt.target.href);
+                    const href = Edit.URIHelper(evt.target.href);
+                    if (href.action === "edit") {
+                        console.dir(evt.target);
 
-                    listOfElemWrapper.innerHTML = "";
+                        listOfElemWrapper.innerHTML = "";
 
+                        //console.log(data);
 
-                    //console.log(data);
+                        //let singleItemData =
+                        new Edit(listOfElemWrapper, evt.target.href, data).render();
+                    }
 
-                    //let singleItemData =
+                    if (href.action === "delete") {
+                        console.log("delete");
+                    }
 
-                    new Edit(listOfElemWrapper, evt.target.href, data).render();
                 }
 
             });
