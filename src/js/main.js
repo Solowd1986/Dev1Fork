@@ -794,13 +794,12 @@ async function submitEditRecord(evt) {
 
 function renderItemEdit(parsedRequest, href) {
     const divWrapper = createElem({tagName: "div", classNameArray: ["admin__form-wrapper"]});
-    //divWrapper.addEventListener("click", (evt) => evt.stopPropagation());
+
     const form = createElem({tagName: "form", classNameArray: ["admin__new-elem-form"]});
     form.addEventListener("submit", (evt) => evt.preventDefault());
     form.name = "admin__elem-form";
 
     const data = parsedRequest;
-
     for (const item in data) {
         const div = createElem({tagName: "div"});
         const label = createElem({tagName: "label", innerText: item});
@@ -815,8 +814,7 @@ function renderItemEdit(parsedRequest, href) {
         form.append(div);
     }
 
-    //console.log("href", href);
-    
+
     const submit = createElem({tagName: "input", classNameArray: ["admin__form-submit"]});
     submit.type = "submit";
     submit.name = "auth-submit";
@@ -832,11 +830,39 @@ function renderItemEdit(parsedRequest, href) {
 
 
 
+
+async function addRecord(evt) {
+    evt.preventDefault();
+    const href = URIHelper(this.href);
+    console.log(href);
+    const request = await Request.sendRequest(`table=${href.table}`, {
+        method: "GET",
+        headers: {
+            "AddRecord": "Yes"
+        }
+    });
+    const parsedResponce = JSON.parse(request);
+    console.log(parsedResponce);
+    rootOfRecords.innerHTML = "";
+
+
+
+}
+
+
+
 async function renderTableRecords(href) {
     const request = await Request.sendRequest(`table=${href.table}`, {method: "GET"});
     const parsedRequest = JSON.parse(request);
 
     rootOfRecords.innerHTML = "";
+
+    const addRecordBtn = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__add-item-btn"], innerText: "Добавить запись"});
+    addRecordBtn.href = `table=${href.table}`;
+    addRecordBtn.addEventListener("click", addRecord);
+    rootOfRecords.prepend(addRecordBtn);
+    
+    
     const ul = createElem({tagName:"ul", classNameArray: ["admin__list-of-records"]});
     rootOfRecords.append(ul);
 

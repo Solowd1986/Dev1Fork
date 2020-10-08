@@ -150,7 +150,16 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (array_key_exists('tables', $_GET)) {
         $res = DbQueryCore::getAllTablesNames();
         print json_encode($res);
+        exit();
     }
+
+
+    if (isset(getallheaders()["AddRecord"])) {
+        $res = DbQueryCore::getFieldNamesOfOneTable($_GET["table"]);
+        print json_encode($res);
+        exit();
+    }
+
 
     if (isset(getallheaders()["Delete"])) {
         $res = DbQueryCore::getItem($_GET["table"], $_GET["id"]);

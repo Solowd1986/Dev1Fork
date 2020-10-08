@@ -27,6 +27,8 @@ class DbQueryCore extends DbConnect
         return \php\db\DbConnect::exec()->lastInsertId();
     }
 
+
+
     public static function update($id, $table, $arrayUserData)
     {
         $columns = [];
@@ -109,6 +111,22 @@ class DbQueryCore extends DbConnect
             return \php\helpers\Output::show("Ошибка при операции getAll " . $e->getMessage());
         }
     }
+
+    public static function getFieldNamesOfOneTable($table)
+    {
+        $sql = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$table}'";
+
+        try {
+            $pdo = \php\db\DbConnect::exec()->prepare($sql);
+            $pdo->execute();
+            return $pdo->fetchAll(\PDO::FETCH_COLUMN);
+        } catch (\Exception $e) {
+            return \php\helpers\Output::show("Ошибка при операции getAll " . $e->getMessage());
+        }
+    }
+
+
+
 
     public static function getTableName($table)
     {
