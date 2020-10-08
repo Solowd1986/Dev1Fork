@@ -724,6 +724,7 @@ showTablesBtn.addEventListener("click", async function (evt) {
 });
 
 
+
 const rootOfRecords = document.querySelector(".admin__records-wrapper");
 
 
@@ -773,7 +774,6 @@ async function editItem (evt) {
 
 
 async function submitEditRecord(evt) {
-
     const href = JSON.parse(this.dataset.href);
 
     const formData = new FormData(this.form);
@@ -790,6 +790,22 @@ async function submitEditRecord(evt) {
     renderTableRecords(href).then();
 }
 
+
+async function submitAddRecord(evt) {
+    const href = JSON.parse(this.dataset.href);
+
+    const formData = new FormData(this.form);
+    formData.append("table", href.table);
+
+    const request = await Request.sendRequest(`table=${href.table}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+            "SubmitAddRecord": "Yes"
+        }
+    });
+    renderTableRecords(href).then();
+}
 
 
 function renderItemEdit(parsedRequest, href) {
@@ -842,13 +858,40 @@ async function addRecord(evt) {
         }
     });
     const parsedResponce = JSON.parse(request);
-    console.log(parsedResponce);
+
     rootOfRecords.innerHTML = "";
+    const divWrapper = createElem({tagName: "div", classNameArray: ["admin__form-wrapper"]});
+
+    const form = createElem({tagName: "form", classNameArray: ["admin__new-elem-form"]});
+    form.addEventListener("submit", (evt) => evt.preventDefault());
+    form.name = "admin__elem-form";
 
 
+    parsedResponce.forEach(item => {
+        if (!["id", "date"].includes(item)) {
+            const div = createElem({tagName: "div"});
+            const label = createElem({tagName: "label", innerText: item});
+            div.append(label);
 
+            const input = createElem({tagName: "input", classNameArray: ["admin__form-input"]});
+            input.type = "text";
+            input.name = `${item}`;
+            input.required = true;
+            div.append(input);
+            form.append(div);
+        }
+    });
+
+    const submit = createElem({tagName: "input", classNameArray: ["admin__form-submit"]});
+    submit.type = "submit";
+    submit.name = "auth-submit";
+    submit.value = "Send";
+    submit.dataset.href = JSON.stringify(href);
+    submit.addEventListener("click", submitAddRecord, {once: true});
+    form.append(submit);
+    divWrapper.append(form);
+    rootOfRecords.append(divWrapper);
 }
-
 
 
 async function renderTableRecords(href) {

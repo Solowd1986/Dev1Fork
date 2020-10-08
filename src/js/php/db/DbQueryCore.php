@@ -9,7 +9,7 @@ class DbQueryCore extends DbConnect
     {
         $columns = [];
         foreach ($arrayUserData as $key => $value) {
-            if ($key !== 'id' && $key !== 'date') {
+            if ($key !== 'id' && $key !== 'date' && $key !== 'table') {
                 $columns[':' . $key] = $value;
             }
         }
@@ -18,6 +18,7 @@ class DbQueryCore extends DbConnect
         $values = implode(',', array_keys($columns));
 
         $sql = "INSERT INTO {$table}($fields) VALUES ($values)";
+        print $sql;
         try {
             $pdo = \php\db\DbConnect::exec()->prepare($sql);
             $pdo->execute($columns);

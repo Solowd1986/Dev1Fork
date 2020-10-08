@@ -46,9 +46,7 @@ $passedData = [
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    if (empty($_POST)) {
-        print "empty arr\n";
-    }
+
 
     if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Edit") {
 
@@ -58,7 +56,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         DbQueryCore::update($id, $table, $_POST);
         print json_encode($_POST);
+        exit();
     }
+
+    if (isset(getallheaders()["SubmitAddRecord"]) && getallheaders()["SubmitAddRecord"] === "Yes") {
+        $table = $_POST['table'];
+        DbQueryCore::insert($table, $_POST);
+        print json_encode($_POST);
+        exit();
+    }
+
+
 
     if (isset(getallheaders()["Edit"]) && getallheaders()["Edit"] === "Yes") {
         $id = $_POST['id'];
@@ -140,6 +148,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (isset($_POST["auth-submit"])) {
         print "post from auth-submit";
+    }
+
+    if (empty($_POST)) {
+        print "empty arr\n";
     }
 }
 
