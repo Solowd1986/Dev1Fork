@@ -9,153 +9,6 @@ require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
 
 
 
-const data = {
-  phone: {
-      cnt: 12,
-      price: 1000
-  }
-};
-
-
-class Component {
-    constructor(props) {
-        this.props = props;
-    }
-
-    render() {
-
-    }
-}
-
-const props = {
-    range: ".range-quantity"
-};
-
-function f2() {
-    const range = document.querySelector(".range-quantity");
-    const rangeParent = document.querySelector(".range-quantity").parentElement;
-    let rangeElem = null;
-    range.addEventListener("change", function (evt) {
-        if (rangeElem !== null) {
-            return;
-        }
-        rangeElem = document.createElement("input");
-        rangeElem.type = "range";
-        rangeElem.min = "1";
-        rangeElem.max = "6";
-        rangeParent.appendChild(rangeElem);
-        console.log(this.value);
-    });
-}
-
-
-
-
-const base = new Component(props);
-
-
-const orderButtnos = document.querySelectorAll(".select-quantity");
-
-const orderParent = document.querySelector(".list-goods");
-
-
-function normilize (val) {
-    let value = parseInt(val);
-    let max = 10;
-    let min = 1;
-    if (isNaN(value) || value < min) {
-        value = min;
-    } else if (value > max) {
-        value = max;
-    }
-    return value;
-}
-
-// orderParent.addEventListener("click", function (evt) {
-//   if (evt.target.classList.contains("select-quantity")) {
-//       for (let item of evt.target.parentElement.children) {
-//           if (item.classList.contains("goods-quantity")) {
-//               item.value = normilize(item.value);
-//           }
-//       }
-//   }
-// }, true);
-//
-//
-// orderParent.addEventListener("click", function (evt) {
-//     if (evt.target.classList.contains("delete-item")) {
-//         evt.target.parentElement.parentElement.remove();
-//     }
-// }, true);
-
-
-const classes = {
-    list: "list-goods",
-    item: "goods-item",
-    itemDesc: "goods-desc",
-    orderWrapper: "wrapper-order",
-    inputQuantity: "goods-quantity",
-    btnChangeQuantity: "btn-order-cart select-quantity",
-    btnDeleteItem: "btn-order-cart delete-item",
-};
-
-const dataItems = [
-    {quantity: 1, price: 2000, title: "Samsung S20"},
-    {quantity: 3, price: 4350, title: "Apple XL"},
-    {quantity: 4, price: 6200, title: "Nokia 3100"},
-];
-
-const dataAll = {
-    dataItems: dataItems,
-    classes: classes
-
-};
-
-const userToken = {
-  uid: 3456,
-  role: "user"
-};
-
-
-
-
-class DataRequest {
-    static sendFetch(url, options, responceType = "text") {
-        // Выносим сюда авторизацию, то есть каждый запрос отправит такой заголовок. Добавляем обьекту options обьект headers, на случай, если
-        // запрос заголовков вообще не передал. Это чтоб пустому обьекту не присвоить заголовок.
-        if (!('headers' in options)) {
-            options.headers = {};
-        }
-        options.headers.authUser = "dsferewqrwer";
-
-        let controller = new AbortController();
-        setTimeout(() => controller.abort(), 4000);
-        options.signal = controller.signal;
-
-        return fetch(url, options).then(response => {
-            if (!response.ok) {
-                return response.text().then(error => {
-                    throw new Error(`HTTP Request Error\nStatus: ${response.status}\nMessage: ${error.match(/<pre>(?<errorMsg>.*)<\/pre>/i) !== null
-                        ? error.match(/<pre>(?<errorMsg>.*)<\/pre>/i).groups.errorMsg
-                        : response.statusText}`);
-                });
-            } else {
-                return response[responceType]();
-            }
-        });
-    }
-}
-
-
-let st = {
-    "user" : "John", 
-    "path" : "/",
-    "expires" : "Tue, 19 Jan 2038 03:14:07 GMT"
-};
-
-
-
-
 
 
 const df = {days: 12, hours: 2, minutes: 30, seconds: 30};
@@ -178,7 +31,6 @@ function dateOffsetHelper(offset) {
     }
     return new Date(dateInitial);
 }
-
 
 
 
@@ -228,9 +80,6 @@ class CookieHelper {
 }
 
 
-//console.log('now', CookieHelper.cookieDateExpireHelper(Date.now() + 10800000, true));
-//console.log(CookieHelper.hasCookie("ss"));
-
 
 
 
@@ -241,7 +90,6 @@ class CookieHelper {
         const au = document.querySelector(".user-auth");
         const form = document.querySelector(".form");
         form.replaceWith((UserAccountForm(data)));
-
     }
 })();
 
@@ -265,7 +113,6 @@ function UserAccountForm(data) {
 
     return div;
 }
-
 
 
 
@@ -435,8 +282,6 @@ class Delete {
         const responce = await Request.sendRequest("/", options);
         console.dir(responce);
     }
-
-
 }
 
 
@@ -688,11 +533,10 @@ function URIHelper(href) {
 }
 
 
-function createElem({tagName, classNameArray = [], innerText = ""} = {}) {
-    const elem = document.createElement(tagName);
-    classNameArray.length > 0 ? elem.classList.add(...classNameArray) : null;
-    elem.classList.add(...classNameArray);
-    innerText !== "" ? elem.innerText = innerText : null;
+function createElem({tag, classes = [], text = ""} = {}) {
+    const elem = document.createElement(tag);
+    classes.length > 0 ? elem.classList.add(...classes) : null;
+    text !== "" ? elem.innerText = text : null;
     return elem;
 }
 
@@ -709,11 +553,9 @@ showTablesBtn.addEventListener("click", async function (evt) {
     try {
         listOfTables.innerHTML = "";
         JSON.parse(request).forEach(item => {
-            const li = document.createElement("li");
-            const link = document.createElement("a");
+            const li = createElem({tag: "li"});
+            const link = createElem({tag: "a", classes: ["admin__btn"], text: `${item.TABLE_COMMENT}`});
             link.addEventListener("click", renderTable);
-            link.classList.add("admin__btn");
-            link.innerText = item.TABLE_COMMENT;
             link.href = `table=${item.TABLE_NAME}`;
             li.append(link);
             listOfTables.append(li);
@@ -809,19 +651,21 @@ async function submitAddRecord(evt) {
 
 
 function renderItemEdit(parsedRequest, href) {
-    const divWrapper = createElem({tagName: "div", classNameArray: ["admin__form-wrapper"]});
+    const divWrapper = createElem({tag: "div", classes: ["admin__form-wrapper"]});
 
-    const form = createElem({tagName: "form", classNameArray: ["admin__new-elem-form"]});
+    const form = createElem({tag: "form", classes: ["admin__new-elem-form"]});
     form.addEventListener("submit", (evt) => evt.preventDefault());
     form.name = "admin__elem-form";
 
     const data = parsedRequest;
+    console.log(12);
+    
     for (const item in data) {
-        const div = createElem({tagName: "div"});
-        const label = createElem({tagName: "label", innerText: item});
+        const div = createElem({tag: "div"});
+        const label = createElem({tag: "label", text: item});
         div.append(label);
 
-        const input = createElem({tagName: "input", classNameArray: ["admin__form-input"]});
+        const input = createElem({tag: "input", classes: ["admin__form-input"]});
         input.type = "text";
         input.name = `${item}`;
         input.value = `${data[item]}`;
@@ -831,7 +675,7 @@ function renderItemEdit(parsedRequest, href) {
     }
 
 
-    const submit = createElem({tagName: "input", classNameArray: ["admin__form-submit"]});
+    const submit = createElem({tag: "input", classes: ["admin__form-submit"]});
     submit.type = "submit";
     submit.name = "auth-submit";
     submit.value = "Send";
@@ -860,20 +704,20 @@ async function addRecord(evt) {
     const parsedResponce = JSON.parse(request);
 
     rootOfRecords.innerHTML = "";
-    const divWrapper = createElem({tagName: "div", classNameArray: ["admin__form-wrapper"]});
+    const divWrapper = createElem({tag: "div", classes: ["admin__form-wrapper"]});
 
-    const form = createElem({tagName: "form", classNameArray: ["admin__new-elem-form"]});
+    const form = createElem({tag: "form", classes: ["admin__new-elem-form"]});
     form.addEventListener("submit", (evt) => evt.preventDefault());
     form.name = "admin__elem-form";
 
 
     parsedResponce.forEach(item => {
         if (!["id", "date"].includes(item)) {
-            const div = createElem({tagName: "div"});
-            const label = createElem({tagName: "label", innerText: item});
+            const div = createElem({tag: "div"});
+            const label = createElem({tag: "label", text: item});
             div.append(label);
 
-            const input = createElem({tagName: "input", classNameArray: ["admin__form-input"]});
+            const input = createElem({tag: "input", classes: ["admin__form-input"]});
             input.type = "text";
             input.name = `${item}`;
             input.required = true;
@@ -882,7 +726,7 @@ async function addRecord(evt) {
         }
     });
 
-    const submit = createElem({tagName: "input", classNameArray: ["admin__form-submit"]});
+    const submit = createElem({tag: "input", classes: ["admin__form-submit"]});
     submit.type = "submit";
     submit.name = "auth-submit";
     submit.value = "Send";
@@ -900,29 +744,29 @@ async function renderTableRecords(href) {
 
     rootOfRecords.innerHTML = "";
 
-    const addRecordBtn = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__add-item-btn"], innerText: "Добавить запись"});
+    const addRecordBtn = createElem({tag: "a", classes: ["admin__btn", "admin__add-item-btn"], text: "Добавить запись"});
     addRecordBtn.href = `table=${href.table}`;
     addRecordBtn.addEventListener("click", addRecord);
     rootOfRecords.prepend(addRecordBtn);
     
     
-    const ul = createElem({tagName:"ul", classNameArray: ["admin__list-of-records"]});
+    const ul = createElem({tag:"ul", classes: ["admin__list-of-records"]});
     rootOfRecords.append(ul);
 
     parsedRequest.forEach(item => {
-        const li = createElem({tagName: "li"});
+        const li = createElem({tag: "li"});
         for (const prop in item) {
-            const p = createElem({tagName: "p", classNameArray: ["admin__field-record"], innerText: `${prop} : ${item[prop]}`});
+            const p = createElem({tag: "p", classes: ["admin__field-record"], text: `${prop} : ${item[prop]}`});
             li.append(p);
         }
-        const divControlsWrapper = createElem({tagName: "div", classNameArray: ["admin__table-controls"]});
+        const divControlsWrapper = createElem({tag: "div", classes: ["admin__table-controls"]});
 
-        const ControlsBtnEdit = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__edit-item-btn"], innerText: "Edit"});
+        const ControlsBtnEdit = createElem({tag: "a", classes: ["admin__btn", "admin__edit-item-btn"], text: "Edit"});
         ControlsBtnEdit.href = `table=${href.table}&action=edit&id=${item["id"]}`;
         ControlsBtnEdit.addEventListener("click", editItem, {once: true});
         divControlsWrapper.append(ControlsBtnEdit);
 
-        const ControlsBtnDelete = createElem({tagName: "a", classNameArray: ["admin__btn", "admin__delete-item-btn"], innerText: "Delete"});
+        const ControlsBtnDelete = createElem({tag: "a", classes: ["admin__btn", "admin__delete-item-btn"], text: "Delete"});
         ControlsBtnDelete.href = `table=${href.table}&action=delete&id=${item["id"]}`;
         ControlsBtnDelete.addEventListener("click", deleteItem, {once: true});
         divControlsWrapper.append(ControlsBtnDelete);
@@ -1013,7 +857,7 @@ UserAuth.formHandler(document.querySelector(".form"));
 
 
 class Request {
-    static sendRequest(url, options) {
+    static sendRequest(url, options, responceType = "text") {
         // Выносим сюда авторизацию, то есть каждый запрос отправит такой заголовок. Добавляем обьекту options обьект headers, на случай, если
         // запрос заголовков вообще не передал. Это чтоб пустому обьекту не присвоить заголовок.
 
@@ -1042,7 +886,7 @@ class Request {
                         : response.statusText}`);
                 });
             } else {
-                return response.text();
+                return response[responceType]();
             }
         });
     }
