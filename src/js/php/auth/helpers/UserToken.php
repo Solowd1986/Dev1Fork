@@ -78,9 +78,6 @@ class UserToken
     }
 
 
-
-
-
     public static function verifyUserData($token)
     {
         /*
