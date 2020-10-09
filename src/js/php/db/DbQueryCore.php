@@ -55,12 +55,18 @@ class DbQueryCore extends DbConnect
         }
     }
 
+    public static function delete($table, $id)
+    {
+        try {
+            $pdo = \php\db\DbConnect::exec()->prepare("DELETE FROM $table WHERE id={$id} LIMIT 1");
+            $pdo->execute();
+            return $pdo->rowCount();
+        } catch (\Exception $e) {
+            return \php\helpers\Output::show("Ошибка при операции delete " . $e->getMessage());
+        }
+    }
 
-    /**
-     * @param $table
-     * @param $id
-     * @return mixed|null
-     */
+
     public static function getItem($table, $id)
     {
         try {
@@ -113,6 +119,7 @@ class DbQueryCore extends DbConnect
         }
     }
 
+
     public static function getFieldNamesOfOneTable($table)
     {
         $sql = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$table}'";
@@ -125,7 +132,6 @@ class DbQueryCore extends DbConnect
             return \php\helpers\Output::show("Ошибка при операции getAll " . $e->getMessage());
         }
     }
-
 
 
 
@@ -155,11 +161,6 @@ class DbQueryCore extends DbConnect
     }
 
 
-    /**
-     * @param $table
-     * @param $record
-     * @return bool|null
-     */
     public static function checkRecord($table, $record)
     {
         try {
@@ -178,21 +179,8 @@ class DbQueryCore extends DbConnect
     }
 
 
-    /**
-     * @param $id
-     * @param $table
-     * @return int - вернет количество удаленных записей, если вернет 0 - то ничего не удалено
-     */
-    public static function delete($table, $id)
-    {
-        try {
-            $pdo = \php\db\DbConnect::exec()->prepare("DELETE FROM $table WHERE id={$id} LIMIT 1");
-            $pdo->execute();
-            return $pdo->rowCount();
-        } catch (\Exception $e) {
-            return \php\helpers\Output::show("Ошибка при операции delete " . $e->getMessage());
-        }
-    }
+
+
 
     
 }

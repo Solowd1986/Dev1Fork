@@ -15,10 +15,11 @@ require_once realpath('php/functions/functions.php');
  *  "php\\auth\\helpers\\": "src/js/php/auth/helpers"
  *
  *
- *  php composer.phar dump-autoload
+ *  Вызови - php composer.phar dump-autoload
  */
 
 /*
+ * Пути для работы без папки dist, просто запуск скриптов от data.php
 require_once realpath('../../vendor/autoload.php');
 require_once realpath('php/functions/functions.php');
 */
@@ -31,6 +32,7 @@ use \php\auth\helpers\DataSanitizeHelper as DataSanitizeHelper;
 use \php\db\DbQueryCore;
 
 
+
 $passedData = [
     "login" => "bob",
     "email" => "lo1go@yaw.ru",
@@ -39,15 +41,8 @@ $passedData = [
 
 
 
-
-
-
-
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-
-
     if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Edit") {
 
         //print $_POST["text"];
@@ -59,13 +54,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
+
     if (isset(getallheaders()["SubmitAddRecord"]) && getallheaders()["SubmitAddRecord"] === "Yes") {
         $table = $_POST['table'];
         DbQueryCore::insert($table, $_POST);
         print json_encode($_POST);
         exit();
     }
-
 
 
     if (isset(getallheaders()["Edit"]) && getallheaders()["Edit"] === "Yes") {
@@ -86,6 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         DbQueryCore::delete($table, $id);
         print json_encode($_POST);
+        exit();
     }
 
 
@@ -105,7 +101,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             print UserToken::packedData(["allowed" => false]);
             //var_dump_pre("Token wrong");
         }
+        exit();
+
     }
+
 
     if (isset(getallheaders()["Data-Type"])) {
 

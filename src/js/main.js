@@ -1005,9 +1005,6 @@ class UserAuth {
         }
     }
 }
-
-
-
 UserAuth.formHandler(document.querySelector(".form"));
 
 
@@ -1015,38 +1012,15 @@ UserAuth.formHandler(document.querySelector(".form"));
 
 
 
-
 class Request {
-
-    static persistentHeaders = {};
-
-    static definePersistentHeaders(headers, options) {
-        for (const item in headers) {
-            this.persistentHeaders[item] = headers[item];
-        }
-    }
-
-    static hasPersistentHeader(headerName) {
-        return headerName in this.persistentHeaders;
-    }
-
-
     static sendRequest(url, options) {
-
         // Выносим сюда авторизацию, то есть каждый запрос отправит такой заголовок. Добавляем обьекту options обьект headers, на случай, если
         // запрос заголовков вообще не передал. Это чтоб пустому обьекту не присвоить заголовок.
 
         if (!('headers' in options)) {
           options.headers = {};
         }
-
-        if (this.persistentHeaders) {
-            for (const item in this.persistentHeaders) {
-                options.headers[item] = this.persistentHeaders[item];
-            }
-        }
-
-        //options.headers.authUser = "dsferewqrwer";
+        //options.headers.authUser = "<random_key>";
 
 
         let controller = new AbortController();
@@ -1060,7 +1034,6 @@ class Request {
          */
         url = url === "/" ? "/dist/data.php" : "/dist/data.php?" + url;
 
-        
         return fetch(url, options).then(response => {
             if (!response.ok) {
                 return response.text().then(error => {
@@ -1069,261 +1042,11 @@ class Request {
                         : response.statusText}`);
                 });
             } else {
-
                 return response.text();
             }
         });
     }
-
-    static rootElementGenerator(rootSelector, appendData) {
-        if (document.querySelector(rootSelector) !== -1) {
-            const root = document.querySelector(rootSelector);
-
-
-            const h3 = document.createElement("h3");
-            h3.innerText = "All data";
-            h3.style.cssText = "text-align: center";
-            root.append(h3);
-
-            const ul = document.createElement("ul");
-
-            appendData.forEach(item => {
-                let li = document.createElement("li");
-                li.style.cssText = "padding: 5px; outline: 1px solid red; margin-bottom: 5px;";
-                for (let data in item) {
-                    let div = document.createElement("div");
-                    div.style.cssText = "padding: 2px;";
-                    div.innerText = `${data}: ${item[data]}`;
-                    li.append(div);
-                }
-                ul.append(li)
-            });
-            root.append(ul);
-            return root;
-        }
-    }
-
-    async getAllData() {
-        try {
-            const request = await Request.sendRequest(`data.php`, {method: "GET"});
-            const result = JSON.parse(request);
-            Request.rootElementGenerator(".result", [result]);
-
-        } catch (e) {
-            console.log(e.message);
-        }
-
-
-        // try {
-        //     const result = JSON.parse(request);
-        //     Request.rootElementGenerator(".result", [result]);
-        // } catch (e) {
-        //     console.log("Error:",e.message, "in getAllData");
-        //     console.log('res', request ? request : !!request);
-        // }
-    }
-
-
-    async getOneItem(id) {
-        const request = await Request.sendRequest(`data.php?id=${id}`, {method: "GET"});
-        try {
-            const result = JSON.parse(request);
-
-            const d = document.querySelector(".result");
-            //d.innerHTML = request;
-            //console.log(request);
-            console.log(result);
-            
-
-            Request.rootElementGenerator(".result", [result]);
-        } catch (e) {
-            console.log('catch res', request.length > 0 ? request : !!request);
-        }
-    }
-
-    async deleteOneItem(id) {
-        const request = await Request.sendRequest(`data.php?id=${id}`, {method: "DELETE"});
-        try {
-            const result = JSON.parse(request);
-            Request.rootElementGenerator(".result", result);
-        } catch (e) {
-            console.log('res', request.length > 0 ? request : !!request);
-        }
-    }
-
-
-    async addOneItem() {
-        const data = {name: "stam", email: "trenf@yandex.ru", psw: "1234"};
-
-        const data2 = [
-            {
-                title: "Nokia",
-                price: 4000,
-                quantity: 1,
-                color: "black"
-            },
-            {
-                title: "Motorola",
-                price: 14000,
-                quantity: 3,
-                color: "red"
-            },
-            {
-                title: "LG",
-                price: 12000,
-                quantity: 4,
-                color: "blue"
-            },
-        ];
-
-        const data3 = {
-            data: {
-                title: "Nokia",
-                price: 4000,
-                quantity: 1,
-                color: "black"
-            }
-        };
-
-
-        const formData = new FormData();
-
-        for (const field in data) {
-            formData.append(field, data[field])
-        }
-
-
-        let datasend = new URLSearchParams(JSON.stringify(data2)).toString();
-        let datasend2 = JSON.stringify(data3);
-
-
-        //console.log(datasend);
-        //console.log(datasend2);
-
-        const dataSet = {
-            name: "bob",
-            age: 21,
-            floor: 4
-        };
-        
-        //const newObj = Object.assign({}, dataSet);
-        const picked = (({ age, floor }) => ({ age, floor }))(dataSet);
-
-        console.log(picked);
-
-
-
-
-        function addTokenToLocalStorage(token) {
-            if (!localStorage.getItem(token.tokenTitle)) {
-                localStorage.setItem(token.tokenTitle, JSON.stringify((({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(token)));
-            } else {
-                const tokenData = (({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(token);
-
-                // console.log('get');
-                // console.log(tokenData.tokenExpire);
-                // console.log(new Date().getTime());
-                // console.log(Date.now());
-
-                if (tokenData.tokenExpire < Date.now()) {
-                    console.log(tokenData.tokenExpire);
-                    console.log(new Date().getTime());
-                    console.log(Date.now());
-                    console.log('token expire');
-                }
-                //console.log(tokenData);
-            }
-        }
-
-
-
-        try {
-            const request = await Request.sendRequest(`data.php`, {method: "POST", body: formData,
-                // headers: {
-                //     'Content-Type': 'application/x-www-form-urlencoded',
-                // }
-            });
-
-            //let t = document.querySelector(".result");
-            //t.innerHTML = request;
-
-            //const result = JSON.parse(request);
-            //Request.rootElementGenerator(".result", [result]);
-
-            const form = document.querySelector(".form");
-
-            function decodeSignedData(str) {
-                return JSON.parse(window.atob(str.substr(0, str.indexOf("|"))));
-            }
-
-
-            function isJson(item) {
-                item = typeof item !== "string"
-                    ? JSON.stringify(item)
-                    : item;
-
-                try {
-                    item = JSON.parse(item);
-                } catch (e) {
-                    return false;
-                }
-
-                return (typeof item === "object" && item !== null);
-            }
-
-
-
-            form.addEventListener("submit", function (evt) {
-                evt.preventDefault();
-                //console.dir(this);
-
-                let formDataSet = new FormData(form);
-                let options = {method: "POST", body: formDataSet, headers: {
-                        'Data-Type': 'user-form',
-                    }};
-                Request.sendRequest("/dist/data.php", options).then(
-                    res => {
-
-                        //let y = JSON.parse(decodeSignedData(res));
-                        //console.log(decodeSignedData(res));
-                        
-
-                        //let t = document.querySelector(".result");
-                        //t.innerHTML += res;
-                        //console.log(res);
-                    });
-
-
-            });
-
-
-
-            //addTokenToLocalStorage(result);
-
-
-            //localStorage.setItem('token', JSON.stringify((({ tokenId, tokenExpire }) => ({ tokenId, tokenExpire }))(result)));
-        } catch (e) {
-            console.log(e.message);
-        }
-    }
 }
-
-
-
-const responce = new Request();
-//responce.getAllData().then();
-
-//new Request().addOneItem().then();
-//new Request().getOneItem(12).then();
-//new Request().deleteOneItem(12).then();
-
-
-
-
-
-
-
-
 
 
 
@@ -1346,7 +1069,6 @@ class Cart {
             value = max;
         }
         return value;
-
     }
 
     cartListGenerator(className) {

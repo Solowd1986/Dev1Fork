@@ -30,7 +30,7 @@ class DbConnect
                     . self::$db . ";" . "charset="
                     . self::$charset, self::$user, self::$psw, $opt);
 
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 var_dump("Error in PDO: " . $e->getMessage());
             }
         }
