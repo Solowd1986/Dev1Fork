@@ -42,43 +42,26 @@ $passedData = [
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Edit") {
 
-        //print $_POST["text"];
-        $id = $_POST['id'];
-        $table = $_POST['table'];
-
-        DbQueryCore::update($id, $table, $_POST);
-        print json_encode($_POST);
-        exit();
-    }
-
-
-    if (isset(getallheaders()["SubmitAddRecord"]) && getallheaders()["SubmitAddRecord"] === "Yes") {
+    //Сюда обращается метод submitAddRecord из класса AdminInitPanel
+    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Add") {
         $table = $_POST['table'];
         DbQueryCore::insert($table, $_POST);
         print json_encode($_POST);
         exit();
     }
-
-
-    if (isset(getallheaders()["Edit"]) && getallheaders()["Edit"] === "Yes") {
+    //Сюда обращается метод submitEditRecord из класса AdminInitPanel
+    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Edit") {
         $id = $_POST['id'];
         $table = $_POST['table'];
-
         DbQueryCore::update($id, $table, $_POST);
         //print json_encode($_POST);
         exit();
     }
-
-
+    //Сюда обращается метод submitDeleteRecord из класса AdminInitPanel
     if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Delete") {
-
-        //print $_POST["text"];
         $id = $_POST['id'];
         $table = $_POST['table'];
-
         DbQueryCore::delete($table, $id);
         print json_encode($_POST);
         exit();
@@ -144,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //print json_encode($responce);
     }
-    
+
     if (isset($_POST["auth-submit"])) {
         print "post from auth-submit";
     }
@@ -158,39 +141,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
+    //Сюда обращается метод showListOfTables из класса AdminInitPanel
     if (array_key_exists('tables', $_GET)) {
         $res = DbQueryCore::getAllTablesNames();
         print json_encode($res);
         exit();
     }
 
-
-    if (isset(getallheaders()["AddRecord"])) {
+    //Сюда обращается метод addRecord из класса AdminInitPanel
+    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Add-Get-Fields") {
         $res = DbQueryCore::getFieldNamesOfOneTable($_GET["table"]);
         print json_encode($res);
         exit();
     }
 
-
-    if (isset(getallheaders()["Edit"])) {
+    //Сюда обращается метод editItem из класса AdminInitPanel
+    if (isset(getallheaders()["Request-Type"]) && getallheaders()["Request-Type"] === "Record-Edit-Get-Item") {
         $res = DbQueryCore::getItem($_GET["table"], $_GET["id"]);
         print json_encode($res);
         exit();
     }
 
+    //Сюда обращается метод renderTableRecords из класса AdminInitPanel
     if (array_key_exists('table', $_GET)) {
         $res = DbQueryCore::getAll($_GET["table"]);
         print json_encode($res);
         exit();
-    }
-
-
-
-
-
-    if (isset(getallheaders()["User-Exit"])) {
-        $name = getallheaders()["User-Exit"];
-        setcookie($name, "", time() - 3600, "/");
     }
 
 }

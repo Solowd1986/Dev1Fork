@@ -14,6 +14,8 @@ import {Request} from "../fetch/Request";
  * <div class="admin__records-wrapper"></div>
  */
 
+
+
 export class AdminInitPanel {
     constructor(selectors) {
         this.selectors = selectors;
@@ -146,7 +148,7 @@ export class AdminInitPanel {
             // Кнопка удаления записи из таблицы
             const ControlsBtnDelete = DomHelper.create({tag: "a", classes: ["admin__btn", "admin__delete-item-btn"], text: "Delete"});
             ControlsBtnDelete.href = `table=${href.table}&action=delete&id=${item["id"]}`;
-            ControlsBtnDelete.addEventListener("click", this.deleteItem.bind(this), {once: true});
+            ControlsBtnDelete.addEventListener("click", this.submitDeleteRecord.bind(this), {once: true});
             divControlsWrapper.append(ControlsBtnDelete);
 
             li.append(divControlsWrapper);
@@ -161,7 +163,7 @@ export class AdminInitPanel {
      * async метод, и его промис нужно перехватить, но по сути это нужно, чтобы там await работал, и then от
      * данного метода не нужен, но иначе выдается предупреждение, так что вот.
      */
-    async deleteItem(evt) {
+    async submitDeleteRecord(evt) {
         evt.preventDefault();
         const href = DomHelper.hrefParse(evt.target.href);
 
@@ -198,7 +200,7 @@ export class AdminInitPanel {
         const request = await Request.send(`table=${href.table}`, {
             method: "GET",
             headers: {
-                "AddRecord": "Yes"
+                "Request-Type" : "Record-Add-Get-Fields"
             }
         });
         const parsedResponce = JSON.parse(request);
@@ -250,7 +252,7 @@ export class AdminInitPanel {
             method: "POST",
             body: formData,
             headers: {
-                "SubmitAddRecord": "Yes"
+                "Request-Type" : "Record-Add"
             }
         });
         this.renderTableRecords(href).then();
@@ -269,7 +271,7 @@ export class AdminInitPanel {
         const request = await Request.send(`table=${href.table}&id=${href.id}`, {
             method: "GET",
             headers: {
-                "Edit": "Yes"
+                "Request-Type" : "Record-Edit-Get-Item"
             }
         });
 
@@ -336,7 +338,7 @@ export class AdminInitPanel {
             method: "POST",
             body: formData,
             headers: {
-                "Edit": "Yes"
+                "Request-Type" : "Record-Edit"
             }
         });
         this.renderTableRecords(href).then();
