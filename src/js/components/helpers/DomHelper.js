@@ -24,12 +24,24 @@ export class DomHelper {
         }
     }
 
+    /**
+     * Пример:
+     * 1. Сайт лежит по адресу: text.ru/dist, на странице есть такая ссылка: <a href="table=admin&role=user"></a>
+     * 2. Общий href тут будет такой: text.ru/dist/table=admin&role=user
+     * 3. Обрезаем начиная справа до слеша(но без него), потом разбиваем по &, а потом по =, формируем обьект
+     * 4. Также учитывая, что от условного text.ru/dist/table может понадобиться лишь table, а разделители & и = вообще не
+     *    представлены, то метод может возвращать лишь обьект со свойством fullQuery и все.
+     *
+     * Разумеется, этот метод требует специфического формирования адресов ссылок, тут все для fetch изначально
+     */
     static hrefParse(href) {
         const obj = {};
         obj.fullQuery = href.slice(href.lastIndexOf("/") + 1);
-        href.slice(href.lastIndexOf("/") + 1).split("&").forEach(item => {
-            obj[item.split("=")[0]] = item.split("=")[1];
-        });
+        if (href.indexOf("=") !== -1 || href.indexOf("&") !== -1) {
+            href.slice(href.lastIndexOf("/") + 1).split("&").forEach(item => {
+                obj[item.split("=")[0]] = item.split("=")[1];
+            });
+        }
         return obj;
     }
 
