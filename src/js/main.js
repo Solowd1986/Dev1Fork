@@ -18,12 +18,3 @@ new AdminInitPanel({
 
 
 
-
-
-
-
-
-
-
-
-

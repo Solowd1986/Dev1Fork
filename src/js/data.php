@@ -172,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 
 
-    if (isset(getallheaders()["Delete"])) {
+    if (isset(getallheaders()["Edit"])) {
         $res = DbQueryCore::getItem($_GET["table"], $_GET["id"]);
         print json_encode($res);
         exit();
