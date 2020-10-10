@@ -12,6 +12,9 @@ import {Request} from "../fetch/Request";
  * <a class="show-tables" href="tables">Вывести таблицы</a>
  * <ul class="admin__list-of-sections"></ul>
  * <div class="admin__records-wrapper"></div>
+ *
+ * Стили:
+ * admin.scss
  */
 
 
