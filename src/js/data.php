@@ -14,6 +14,10 @@ require_once realpath('php/functions/functions.php');
  *  "php\\auth\\": "src/js/php/auth",
  *  "php\\auth\\helpers\\": "src/js/php/auth/helpers"
  *
+ * Пути для работы модуля от папки dist:
+ *  "php\\db\\": "php/db",
+ *  "php\\auth\\": "php/auth",
+ *  "php\\auth\\helpers\\": "php/auth/helpers"
  *
  *  Вызови - php composer.phar dump-autoload
  */
