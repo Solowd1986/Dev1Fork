@@ -2,7 +2,6 @@
 
 export class CookieHelper {
 
-
     static hasCookie(cookieName) {
         if (document.cookie.length > 0) {
             return document.cookie.split(";").map(item => item.trim().match(/(?<name>.*?)=/).groups.name).includes(cookieName);

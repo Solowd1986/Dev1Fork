@@ -228,7 +228,6 @@ export class AdminInitPanel {
             }
         });
 
-
         const submit = DomHelper.create({tag: "input", classes: ["admin__form-submit"]});
         submit.type = "submit";
         submit.name = "auth-submit";
