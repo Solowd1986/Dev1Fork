@@ -6,6 +6,15 @@
 require_once realpath('vendor/autoload.php');
 require_once realpath('php/functions/functions.php');
 
+
+/*
+ * Пути для работы без папки dist, просто запуск скриптов от data.php
+ */
+//require_once realpath('../../vendor/autoload.php');
+//require_once realpath('php/functions/functions.php');
+
+
+
 /*
  * Пути для запуска скрипта самостоятельно, но нужно прописать новые пути автозагрузки
  * и вызвать php composer.phar dump-autoload
@@ -19,14 +28,9 @@ require_once realpath('php/functions/functions.php');
  *  "php\\auth\\": "php/auth",
  *  "php\\auth\\helpers\\": "php/auth/helpers"
  *
- *  Вызови - php composer.phar dump-autoload
+ *  Вызови - php composer.phar dump-autoload + npm run prod-reload
  */
 
-/*
- * Пути для работы без папки dist, просто запуск скриптов от data.php
-require_once realpath('../../vendor/autoload.php');
-require_once realpath('php/functions/functions.php');
-*/
 
 
 

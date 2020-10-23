@@ -30,6 +30,7 @@ module.exports = {
     output: {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist")
+
     },
     devtool: 'eval-cheap-module-source-map',
     devServer: {
@@ -69,7 +70,6 @@ module.exports = {
         ],
     },
     plugins: [
-
         //HtmlWebPackPlugin - основной плагин для генерации html через webpack
         // templateParameters - данные, передаваемые в шаблон
         new HtmlWebpackPlugin({

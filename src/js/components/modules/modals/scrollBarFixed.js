@@ -1,6 +1,9 @@
 "use strict";
 
-/*  Данную функцию нужно вызывать до появления модального окна, иначе она не успееет рассчитать ширину scollbar-а и расчеты не будут выполнены.
+
+
+/*  Данную функцию нужно вызывать до появления модального окна,
+    иначе она не успееет рассчитать ширину scollbar-а и расчеты не будут выполнены.
 ================================
 */
 
@@ -13,12 +16,12 @@ function scrollBarFixed(elementListSelector) {
         const windowWidth = window.innerWidth;
         // Получаем ширину документа, это аналог width: 100%
         const documentWidth = document.documentElement.clientWidth;
-        // Возвращаем разницу между этими величинами, это и есть ширина scrollbar. Если его нет, то вернутся такие значения -1 или 0
+        // Возвращаем разницу между этими величинами, это и есть ширина scrollbar.
+        // Если его нет, то вернутся такие значения: -1 или 0
         return windowWidth - documentWidth;
     }
 
     if (calcScrollBarWidth() > 0) {
-
         containers.forEach(value => {
             const basePaddingRight = parseInt(window.getComputedStyle(value).getPropertyValue("padding-right"));
             value.style.paddingRight = `${calcScrollBarWidth() + basePaddingRight}px`;

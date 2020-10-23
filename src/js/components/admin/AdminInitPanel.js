@@ -97,7 +97,7 @@ export class AdminInitPanel {
      *  Данный метод - посредник, он обрабатывает событие клика, получает данные из href ссылки и вызывает метод отрисовки
      *  списка элементов выбранной таблицы БД. По сути, его вроде как можно убрать и передавать данные сразу в
      *  renderTableRecords, но тогда нужно в самом renderTableRecords описывать логику обработки полученных данных,
-     *  так как может поступить как evt от ссылки, с href или evt от кнопки submit (от операций вставки иил удаления).
+     *  так как может поступить как evt от ссылки, с href или evt от кнопки submit (от операций вставки или удаления).
      *  Там данные уже в dataset.href, причем в JSON.stringify формате. Там же его приводят к удобному обьекту href,
      *  но мы то вроде как собирались получать на вход evt элемента. Короче, проще сохранить renderTableRecords
      *  универсальным, получающим на вход одно и то же.
@@ -122,6 +122,7 @@ export class AdminInitPanel {
         const request = await Request.send(`table=${href.table}`, {method: "GET"});
         const parsedRequest = JSON.parse(request);
 
+        // Всегда обнуляем содержимое блока записей таблицы БД перед новой отрисовкой
         this.listOfRecordsWrapper.innerHTML = "";
 
         // Кнопка добавления новой записи в таблицу
@@ -129,7 +130,6 @@ export class AdminInitPanel {
         addRecordBtn.href = `table=${href.table}`;
         addRecordBtn.addEventListener("click", this.addRecord.bind(this));
         this.listOfRecordsWrapper.prepend(addRecordBtn);
-
 
         const ul = DomHelper.create({tag:"ul", classes: ["admin__list-of-records"]});
         this.listOfRecordsWrapper.append(ul);
@@ -269,7 +269,6 @@ export class AdminInitPanel {
     async editItem(evt) {
         evt.preventDefault();
         const href = DomHelper.hrefParse(evt.target.href);
-
         const request = await Request.send(`table=${href.table}&id=${href.id}`, {
             method: "GET",
             headers: {
@@ -278,7 +277,9 @@ export class AdminInitPanel {
         });
 
         const parsedRequest = JSON.parse(request);
+        // Очищаем блок вывода данных, там теперь будет форма для редактирования выбранной записис
         this.listOfRecordsWrapper.innerHTML = "";
+        // Вызываем метод рендеринга формы редактирования записи
         this.listOfRecordsWrapper.append(this.renderItemEdit(parsedRequest, href));
     }
 
