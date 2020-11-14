@@ -21,9 +21,6 @@ const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
 
 
-// deleted
-const HandlebarsPlugin = require("handlebars-webpack-plugin");
-
 
 module.exports = {
     entry: path.resolve(__dirname, "src/js/main.js"),
@@ -39,6 +36,15 @@ module.exports = {
             warnings: true,
             errors: true
         },
+
+
+        proxy: {
+            '/api/**': {
+                target: 'http://dev1.test/src/php/data.php',
+                secure: false,
+            },
+        },
+
         historyApiFallback: true,
         disableHostCheck: true,
         //public: 'dev1.test',
@@ -107,10 +113,7 @@ module.exports = {
                     from: path.resolve(__dirname, "src/assets/img/favicon/"),
                     to: './'
                 },
-                {
-                    from: path.resolve(__dirname, "src/js/data.php"),
-                    to: './'
-                },
+
                 {
                     from: path.resolve(__dirname, "src/js/php"),
                     to: './php'

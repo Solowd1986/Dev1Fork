@@ -83,7 +83,7 @@ export class AdminInitPanel {
             JSON.parse(request).forEach(item => {
                 const li = DomHelper.create({tag: "li"});
                 const link = DomHelper.create({tag: "a", classes: ["admin__btn"], text: `${item.TABLE_COMMENT}`});
-                link.addEventListener("click", this.renderTable.bind(this));
+                link.addEventListener("click", this.renderTableRecords.bind(this));
                 link.href = `table=${item.TABLE_NAME}`;
                 li.append(link);
                 this.listOfTablesWrapper.append(li);
@@ -94,31 +94,17 @@ export class AdminInitPanel {
     };
 
     /**
-     *  Данный метод - посредник, он обрабатывает событие клика, получает данные из href ссылки и вызывает метод отрисовки
-     *  списка элементов выбранной таблицы БД. По сути, его вроде как можно убрать и передавать данные сразу в
-     *  renderTableRecords, но тогда нужно в самом renderTableRecords описывать логику обработки полученных данных,
-     *  так как может поступить как evt от ссылки, с href или evt от кнопки submit (от операций вставки или удаления).
-     *  Там данные уже в dataset.href, причем в JSON.stringify формате. Там же его приводят к удобному обьекту href,
-     *  но мы то вроде как собирались получать на вход evt элемента. Короче, проще сохранить renderTableRecords
-     *  универсальным, получающим на вход одно и то же.
+     * Данный метод отвечает за отрисовку всех записей выбранной таблицы. На вход он получает событие, так как подвешивается
+     * на слушатель события клика по ссылке/кнопке. Оттуда он берет данные о том, какую таблицу ему отрисовать. Данные могут
+     * быть получены двумя путями: проверяем - если клик был по ссылке и есть evt.target.href - то парсим это в обьект,
+     * с удобным полем table. Если такого нет, то клик был по кнопке, у кнопки передача таких данных выполняется через data-атрибут
+     * Поэтому просто разбираем этот атрибут dataset.href через JSON.parse в обьект и опять таки используем
+     * для получения нужной таблицы.
      */
-    async renderTable(evt) {
+    async renderTableRecords(evt) {
         evt.preventDefault();
-        const href = DomHelper.hrefParse(evt.target.href);
-        this.renderTableRecords(href).then();
-    }
+        const href = (evt.target.href) ? DomHelper.hrefParse(evt.target.href) : JSON.parse(evt.target.dataset.href);
 
-
-    /**
-     * Как было сказано, это универсальный метод, он генерирует разметку всех элементов выбранной таблицы БД.
-     * По сути, ему можно просто передавать название таблицы, а не обьект с еще и другими данными, но для удобства
-     * пусть будет, вдруг данные понадобятся.
-     *
-     * Также в данном методе подвешиваются обработчики на три действия: добавить запись в таблицу, редактировать, удалить.
-     * Каждый метод тут опять же передается как callback, с использованием bind. То есть мы как бы пробрасываем this
-     * постоянно, каждый addEventListener + callback - значит используем bind, и this всегда правильный.
-     */
-    async renderTableRecords(href) {
         const request = await Request.send(`table=${href.table}`, {method: "GET"});
         const parsedRequest = JSON.parse(request);
 
@@ -181,7 +167,7 @@ export class AdminInitPanel {
             }
         };
         const responce = await Request.send("/", options);
-        this.renderTableRecords(href).then();
+        this.renderTableRecords(evt).then();
     }
 
 
@@ -257,7 +243,7 @@ export class AdminInitPanel {
                 "Request-Type" : "Record-Add"
             }
         });
-        this.renderTableRecords(href).then();
+        this.renderTableRecords(evt).then();
     }
 
 
@@ -344,7 +330,7 @@ export class AdminInitPanel {
                 "Request-Type" : "Record-Edit"
             }
         });
-        this.renderTableRecords(href).then();
+        this.renderTableRecords(evt).then();
     }
 }
 
