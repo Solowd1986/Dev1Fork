@@ -37,7 +37,6 @@ module.exports = {
             errors: true
         },
 
-
         proxy: {
             '/api/**': {
                 target: 'http://dev1.test/src/php/data.php',
