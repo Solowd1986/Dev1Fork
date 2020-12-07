@@ -12,6 +12,8 @@ import {CookieHelper} from "./components/helpers/CookieHelper";
 
 
 
+
+
 fetch("api/src")
     .then((res) =>
         res.text()
@@ -22,6 +24,7 @@ fetch("api/src")
 //     .then((res) =>
 //         res.text()
 //             .then(res => console.log(res)));
+
 
 
 new AdminInitPanel({
