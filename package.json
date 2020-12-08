@@ -7,7 +7,21 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "webpack-dev-server --mode development --open",
     "prod-reload": "webpack --mode development --watch",
-    "prod": "webpack --mode production"
+    "prod": "webpack --mode production",
+
+    "lint": "eslint ./src/js/test.js",
+    "lint:fix": "eslint ./src/js/test.js --fix --color"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "eslint-staged"
+    }
+  },
+  "eslint-staged": {
+    "test.js": [
+      "npm run lint:fix",
+      "git add"
+    ]
   },
   "browserslist": [
     "> 1%",
@@ -35,8 +49,12 @@
     "cssnano": "^4.1.10",
     "depcheck": "^1.2.0",
     "eslint": "^7.7.0",
+    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-html": "^6.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.2.0",
     "file-loader": "^6.0.0",
     "handlebars": "^4.7.6",
     "handlebars-loader": "^1.7.1",
@@ -54,6 +72,7 @@
     "normalize.css": "^8.0.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
+    "prettier": "^2.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "require-dir": "^1.2.0",
