@@ -15,7 +15,7 @@ function sell(name) {
   console.log(name);
 }
 
-const gg = "12";
+const gg = '12';
 
 fetch("api/src")
   .then((res) => res.text()
