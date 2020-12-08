@@ -12,8 +12,6 @@ import {CookieHelper} from "./components/helpers/CookieHelper";
 
 
 
-
-
 fetch("api/src")
     .then((res) =>
         res.text()

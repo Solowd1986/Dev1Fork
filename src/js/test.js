@@ -1,4 +1,4 @@
-import "normalize.css";
+import 'normalize.css';
 import "../assets/scss/main.scss";
 import "@babel/polyfill";
 // require.context('../assets/img/', true, /\.jpe?g$|.png$|.svg$|.gif$/);
@@ -14,6 +14,8 @@ const name = 12;
 function sell(name) {
   console.log(name);
 }
+
+
 
 const gg = '12';
 

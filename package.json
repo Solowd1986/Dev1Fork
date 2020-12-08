@@ -11,17 +11,8 @@
     "lint": "eslint ./src/js/test.js",
     "lint:fix": "eslint ./src/js/test.js --fix --color"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "test.js": [
-      "npm run lint:fix",
-      "git add"
-    ]
-  },
+
+
   "browserslist": [
     "> 1%",
     "last 5 version"
@@ -32,6 +23,7 @@
   "dependencies": {
     "@babel/plugin-proposal-throw-expressions": "^7.12.1",
     "@babel/polyfill": "^7.10.4",
+    "husky": "^4.3.5",
     "lint-staged": "^10.5.3"
   },
   "devDependencies": {
