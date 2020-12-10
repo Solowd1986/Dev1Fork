@@ -19,7 +19,6 @@
 
 .content {
   background-color: lightpink;
-  padding: 1px;
   margin: auto;
   text-align: center;
   //background-image: url("../../../img/68778702_327427475.jpg");
@@ -31,6 +30,127 @@
 /*  TEST
 ================================
 */
+
+
+.data-list {
+  position: relative;
+  padding-bottom: 65px;
+  text-align: center;
+
+  & > button {
+    display: flex;
+    position: absolute;
+    color: white;
+    bottom: 15px;
+    align-items: center;
+    background-color: red;
+    right: 0; left: 0; margin: 0 auto;
+    padding: 8px 25px;
+    border-radius: 5px;
+    transition: 0.5s linear;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+
+
+.btn-more.active > .loader {
+  animation: lds-dual-ring .8s linear infinite;
+}
+
+.loader {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  left: -10px;
+}
+
+
+.loader:after {
+  content: " ";
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border-color: #fff;
+  border-color: #fff rgba(0,0,0,0);
+  border-style: solid;
+  border-width: 5px;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+.btn-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+
+.btn-products {
+  border-radius: 50px;
+  position: relative;
+  background-color: $white;
+  font-size: 15px;
+  max-width: 255px;
+  max-height: 58px;
+  padding: 15px 10px 15px 55px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #c51abb;
+  border: 2px solid #c51abb;
+
+  &:hover:after {
+    animation: lds-dual-ring .8s linear infinite;
+  }
+
+
+  &:after {
+    content: "";
+    border-color: #f22;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: inline-block;
+    position: absolute;
+    top: 12px;
+    left: 20px;
+    background-size: contain;
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgNDg5LjcxMSA0ODkuNzExIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODkuNzExIDQ4OS43MTE7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGQ9Ik0xMTIuMTU2LDk3LjExMWM3Mi4zLTY1LjQsMTgwLjUtNjYuNCwyNTMuOC02LjdsLTU4LjEsMi4yYy03LjUsMC4zLTEzLjMsNi41LTEzLDE0YzAuMyw3LjMsNi4zLDEzLDEzLjUsMTMgICAgYzAuMiwwLDAuMywwLDAuNSwwbDg5LjItMy4zYzcuMy0wLjMsMTMtNi4yLDEzLTEzLjV2LTFjMC0wLjIsMC0wLjMsMC0wLjV2LTAuMWwwLDBsLTMuMy04OC4yYy0wLjMtNy41LTYuNi0xMy4zLTE0LTEzICAgIGMtNy41LDAuMy0xMy4zLDYuNS0xMywxNGwyLjEsNTUuM2MtMzYuMy0yOS43LTgxLTQ2LjktMTI4LjgtNDkuM2MtNTkuMi0zLTExNi4xLDE3LjMtMTYwLDU3LjFjLTYwLjQsNTQuNy04NiwxMzcuOS02Ni44LDIxNy4xICAgIGMxLjUsNi4yLDcsMTAuMywxMy4xLDEwLjNjMS4xLDAsMi4xLTAuMSwzLjItMC40YzcuMi0xLjgsMTEuNy05LjEsOS45LTE2LjNDMzYuNjU2LDIxOC4yMTEsNTkuMDU2LDE0NS4xMTEsMTEyLjE1Niw5Ny4xMTF6IiBmaWxsPSIjYzUxYWJiIi8+DQoJCTxwYXRoIGQ9Ik00NjIuNDU2LDE5NS41MTFjLTEuOC03LjItOS4xLTExLjctMTYuMy05LjljLTcuMiwxLjgtMTEuNyw5LjEtOS45LDE2LjNjMTYuOSw2OS42LTUuNiwxNDIuNy01OC43LDE5MC43ICAgIGMtMzcuMywzMy43LTg0LjEsNTAuMy0xMzAuNyw1MC4zYy00NC41LDAtODguOS0xNS4xLTEyNC43LTQ0LjlsNTguOC01LjNjNy40LTAuNywxMi45LTcuMiwxMi4yLTE0LjdzLTcuMi0xMi45LTE0LjctMTIuMmwtODguOSw4ICAgIGMtNy40LDAuNy0xMi45LDcuMi0xMi4yLDE0LjdsOCw4OC45YzAuNiw3LDYuNSwxMi4zLDEzLjQsMTIuM2MwLjQsMCwwLjgsMCwxLjItMC4xYzcuNC0wLjcsMTIuOS03LjIsMTIuMi0xNC43bC00LjgtNTQuMSAgICBjMzYuMywyOS40LDgwLjgsNDYuNSwxMjguMyw0OC45YzMuOCwwLjIsNy42LDAuMywxMS4zLDAuM2M1NS4xLDAsMTA3LjUtMjAuMiwxNDguNy01Ny40ICAgIEM0NTYuMDU2LDM1Ny45MTEsNDgxLjY1NiwyNzQuODExLDQ2Mi40NTYsMTk1LjUxMXoiIGZpbGw9IiNjNTFhYmIiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg==");
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+@keyframes rotate-ring{
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+
+
+
 
 .back-g {
   height: 200px;
