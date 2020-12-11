@@ -97,6 +97,9 @@ elem.innerHTML = "Hello";
 //overlay(elem);
 
 
+
+
+
 const more = document.querySelector(".btn-more");
 
 more.addEventListener("click", function (evt) {
@@ -106,18 +109,15 @@ more.addEventListener("click", function (evt) {
     overlay.classList.add("btn-overlay");
     document.body.append(overlay);
 
-
-
     const controller = new AbortController();
     const signal = controller.signal;
-
     setTimeout(() => controller.abort(), 5000);
 
     overlay.addEventListener("click", function (evt) {
         document.body.style.removeProperty("overflow");
         overlay.remove();
         overlay = null;
-        controller.abort()
+        controller.abort();
     });
 
     fetch("api/src", {signal}).then((res) => res.json().then(res => {
@@ -126,7 +126,6 @@ more.addEventListener("click", function (evt) {
 
         overlay.remove();
         overlay = null;
-
 
         const parent = document.querySelector(".data-list");
         if (res.length === 0 ) {
@@ -141,13 +140,10 @@ more.addEventListener("click", function (evt) {
             div.classList.add("animate__animated", "animate__fadeIn");
             parent.append(div);
         });
+
     })).catch(err => {
         more.classList.remove("active");
         console.log("abort from catch");
-    }).finally(() => {
-        console.log("abort from finally");
-
-
     });
 });
 
